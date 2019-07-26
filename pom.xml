@@ -28,6 +28,10 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
+            <artifactId>vertx-config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
             <artifactId>vertx-kafka-client</artifactId>
         </dependency>
     </dependencies>
@@ -43,5 +47,9 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <modules>
+        <module>orders</module>
+    </modules>
 
 </project>
