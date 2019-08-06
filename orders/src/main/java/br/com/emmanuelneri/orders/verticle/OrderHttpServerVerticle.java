@@ -29,7 +29,7 @@ public class OrderHttpServerVerticle extends AbstractVerticle {
         router.post("/orders").handler(orderRoutingHandler.addOrder()).failureHandler(failureHandler);
 
         httpServer.requestHandler(router)
-                .listen(configuration.getHttpServerPort());
+                .listen(configuration.getPort());
     }
 
 }
