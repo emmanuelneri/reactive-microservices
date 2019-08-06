@@ -1,6 +1,6 @@
 package br.com.emmanuelneri.orders.verticle;
 
-import br.com.emmanuelneri.orders.infra.Configuration;
+import br.com.emmanuelneri.commons.infra.HttpServerConfiguration;
 import br.com.emmanuelneri.orders.web.FailureHandler;
 import br.com.emmanuelneri.orders.web.OrderRoutingHandler;
 import io.vertx.core.AbstractVerticle;
@@ -11,9 +11,9 @@ import io.vertx.ext.web.handler.BodyHandler;
 
 public class OrderHttpServerVerticle extends AbstractVerticle {
 
-    private final Configuration configuration;
+    private final HttpServerConfiguration configuration;
 
-    public OrderHttpServerVerticle(final Configuration configuration) {
+    public OrderHttpServerVerticle(final HttpServerConfiguration configuration) {
         this.configuration = configuration;
     }
 

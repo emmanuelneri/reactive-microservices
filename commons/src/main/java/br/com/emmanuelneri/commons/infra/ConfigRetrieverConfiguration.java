@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.orders.infra;
+package br.com.emmanuelneri.commons.infra;
 
 import io.vertx.config.ConfigRetriever;
 import io.vertx.config.ConfigRetrieverOptions;

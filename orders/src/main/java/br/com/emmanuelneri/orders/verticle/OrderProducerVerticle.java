@@ -1,6 +1,6 @@
 package br.com.emmanuelneri.orders.verticle;
 
-import br.com.emmanuelneri.orders.infra.Configuration;
+import br.com.emmanuelneri.commons.infra.KafkaConfiguration;
 import br.com.emmanuelneri.orders.infra.Topic;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
@@ -20,9 +20,9 @@ public class OrderProducerVerticle extends AbstractVerticle {
     private final Logger LOGGER = LoggerFactory.getLogger(OrderProducerVerticle.class);
     private static final String NEW_ORDER_TOPIC = Topic.ORDER.getTopic();
 
-    private final Configuration configuration;
+    private final KafkaConfiguration configuration;
 
-    public OrderProducerVerticle(final Configuration configuration) {
+    public OrderProducerVerticle(final KafkaConfiguration configuration) {
         this.configuration = configuration;
     }
 
