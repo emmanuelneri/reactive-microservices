@@ -9,7 +9,6 @@ import io.vertx.core.logging.LoggerFactory;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,7 +27,7 @@ public class OrderProducerVerticle extends AbstractVerticle {
 
     @Override
     public void start(final Future<Void> startFuture) {
-        final Map<String, String> config = createKafkaConfig();
+        final Map<String, String> config = configuration.createKafkaProducerConfig();
         final KafkaProducer<String, String> producer = KafkaProducer.create(vertx, config);
 
         vertx.eventBus().localConsumer(RECEIVED_ORDER.getAddress(), message -> {
@@ -38,13 +37,5 @@ public class OrderProducerVerticle extends AbstractVerticle {
 
             LOGGER.info("message produced {0}", kafkaProducerRecord);
         });
-    }
-
-    private Map<String, String> createKafkaConfig() {
-        final Map<String, String> config = new HashMap<>();
-        config.put("bootstrap.servers", configuration.getKafkaBootstrapServers());
-        config.put("key.serializer", configuration.getKafkaKeySerializer());
-        config.put("value.serializer", configuration.getKafkaValueSerializer());
-        return config;
     }
 }
