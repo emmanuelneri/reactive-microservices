@@ -12,6 +12,7 @@ public final class KafkaConfiguration {
     private final String valueSerializer;
     private final String keyDeserializer;
     private final String valueDeserializer;
+    private final String offsetReset;
 
     public KafkaConfiguration(final JsonObject configuration) {
         this.bootstrapServers = configuration.getString("bootstrap.servers");
@@ -19,6 +20,7 @@ public final class KafkaConfiguration {
         this.valueSerializer = configuration.getString("value.serializer");
         this.keyDeserializer = configuration.getString("value.deserializer");
         this.valueDeserializer = configuration.getString("value.deserializer");
+        this.offsetReset = configuration.getString("offset.reset");
     }
 
     public Map<String, String> createKafkaProducerConfig() {
@@ -35,7 +37,7 @@ public final class KafkaConfiguration {
         config.put("key.deserializer", this.keyDeserializer);
         config.put("value.deserializer", this.valueDeserializer);
         config.put("group.id", consumerGroupId);
-        config.put("auto.offset.reset", "earliest");
+        config.put("auto.offset.reset", this.offsetReset);
         return config;
     }
 }

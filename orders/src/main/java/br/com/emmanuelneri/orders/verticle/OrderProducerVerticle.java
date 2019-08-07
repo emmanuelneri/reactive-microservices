@@ -33,9 +33,15 @@ public class OrderProducerVerticle extends AbstractVerticle {
         vertx.eventBus().localConsumer(RECEIVED_ORDER.getAddress(), message -> {
             final String key = UUID.randomUUID().toString();
             final KafkaProducerRecord<String, String> kafkaProducerRecord = KafkaProducerRecord.create(NEW_ORDER_TOPIC, key, (String) message.body());
-            producer.send(kafkaProducerRecord);
 
-            LOGGER.info("message produced {0}", kafkaProducerRecord);
+            producer.send(kafkaProducerRecord, result -> {
+                if(result.failed()) {
+                    LOGGER.error("message produce error {0}", kafkaProducerRecord);
+                    return;
+                }
+
+                LOGGER.info("message produced {0}", kafkaProducerRecord);
+            });
         });
     }
 }

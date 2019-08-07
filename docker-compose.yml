@@ -2,6 +2,7 @@ version: '3.6'
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:5.2.1
+    container_name: zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -9,6 +10,7 @@ services:
 
   kafka:
     image: confluentinc/cp-kafka:5.2.1
+    container_name: kafka
     ports:
       - "9092:9092"
     depends_on:
