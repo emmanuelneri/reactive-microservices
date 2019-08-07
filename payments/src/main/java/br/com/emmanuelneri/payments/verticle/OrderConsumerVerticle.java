@@ -29,7 +29,15 @@ public class OrderConsumerVerticle extends AbstractVerticle {
     public void start(final Future<Void> startFuture) {
         final Map<String, String> config = configuration.createKafkaConsumerConfig(CONSUMER_GROUP_ID);
         final KafkaConsumer<String, String> kafkaConsumer = KafkaConsumer.create(vertx, config);
-        kafkaConsumer.subscribe(NEW_ORDER_TOPIC);
+
+        kafkaConsumer.subscribe(NEW_ORDER_TOPIC, result -> {
+           if(result.failed()) {
+               LOGGER.error("failed to subscribe {0} topic", NEW_ORDER_TOPIC, result.cause());
+               return;
+           }
+
+            LOGGER.info("topic {0} subscribed", NEW_ORDER_TOPIC);
+        });
 
         kafkaConsumer.handler(result -> {
             LOGGER.info("message consumed {0}", result);
