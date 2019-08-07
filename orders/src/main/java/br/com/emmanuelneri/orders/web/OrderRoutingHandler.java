@@ -12,7 +12,7 @@ import static br.com.emmanuelneri.orders.infra.EventBusAddress.RECEIVED_ORDER;
 
 public class OrderRoutingHandler {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(OrderRoutingHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderRoutingHandler.class);
 
     private final Vertx vertx;
 

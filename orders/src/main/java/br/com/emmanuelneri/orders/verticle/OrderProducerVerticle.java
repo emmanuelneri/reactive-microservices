@@ -16,7 +16,7 @@ import static br.com.emmanuelneri.orders.infra.EventBusAddress.RECEIVED_ORDER;
 
 public class OrderProducerVerticle extends AbstractVerticle {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(OrderProducerVerticle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderProducerVerticle.class);
     private static final String NEW_ORDER_TOPIC = Topic.ORDER.getTopic();
 
     private final KafkaConfiguration configuration;

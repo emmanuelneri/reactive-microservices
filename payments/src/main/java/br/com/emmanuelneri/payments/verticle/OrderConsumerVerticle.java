@@ -15,7 +15,7 @@ import static br.com.emmanuelneri.payments.infra.EventBusAddress.NEW_PAYMENT;
 
 public class OrderConsumerVerticle extends AbstractVerticle {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(OrderConsumerVerticle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OrderConsumerVerticle.class);
     private static final String CONSUMER_GROUP_ID = "ORDER_CONSUMER_GROUP";
     private static final String NEW_ORDER_TOPIC = Topic.ORDER.getTopic();
 

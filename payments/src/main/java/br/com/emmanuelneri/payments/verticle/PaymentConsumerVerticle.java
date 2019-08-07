@@ -12,7 +12,7 @@ import static br.com.emmanuelneri.payments.infra.EventBusAddress.NEW_PAYMENT;
 
 public class PaymentConsumerVerticle extends AbstractVerticle {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(PaymentConsumerVerticle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PaymentConsumerVerticle.class);
 
     @Override
     public void start(final Future<Void> startFuture) {

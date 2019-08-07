@@ -7,7 +7,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class FailureHandler implements Handler<RoutingContext> {
 
-    private final Logger LOGGER = LoggerFactory.getLogger(FailureHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FailureHandler.class);
 
     @Override
     public void handle(final RoutingContext routingContext) {
