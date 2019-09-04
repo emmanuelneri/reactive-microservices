@@ -17,6 +17,4 @@ public class ConfigRetrieverConfiguration {
         return ConfigRetriever.create(vertx,
                 new ConfigRetrieverOptions().addStore(store));
     }
-
-
 }

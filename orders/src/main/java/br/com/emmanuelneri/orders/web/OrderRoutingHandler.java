@@ -1,9 +1,9 @@
 package br.com.emmanuelneri.orders.web;
 
+import br.com.emmanuelneri.order.schema.OrderSchema;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
@@ -20,21 +20,32 @@ public class OrderRoutingHandler {
         this.vertx = vertx;
     }
 
-    public Handler<RoutingContext> addOrder() {
+    public Handler<RoutingContext> orderProcessContext() {
         return routingContext -> {
-            final JsonObject order = getOrderAsJson(routingContext);
-            LOGGER.info("order received {0}", order);
-
-            sendOrderToEventBus(order);
-            routingContext.response().end();
+            LOGGER.info("order received {0}", routingContext.getBodyAsString());
+            convert(routingContext, orderSchema -> {
+                process(orderSchema);
+                routingContext.response().end();
+            }, error -> {
+                LOGGER.error("invalid order", error);
+                routingContext.response()
+                        .setStatusCode(400)
+                        .setStatusMessage("invalid order")
+                        .end();
+            });
         };
     }
 
-    private void sendOrderToEventBus(final JsonObject order) {
-        vertx.eventBus().send(RECEIVED_ORDER.getAddress(), Json.encode(order));
+    private void convert(final RoutingContext routingContext, final Handler<OrderSchema> successHandler, final Handler<Throwable> errorHandler) {
+        try {
+            final String body = routingContext.getBodyAsString();
+            successHandler.handle(Json.mapper.readValue(body, OrderSchema.class));
+        } catch (Exception ex) {
+            errorHandler.handle(ex);
+        }
     }
 
-    private JsonObject getOrderAsJson(final RoutingContext routingContext) {
-        return routingContext.getBodyAsJson();
+    private void process(final OrderSchema orderSchema) {
+        vertx.eventBus().send(RECEIVED_ORDER.getAddress(), Json.encode(orderSchema));
     }
 }

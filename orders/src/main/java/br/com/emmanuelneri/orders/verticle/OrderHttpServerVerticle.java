@@ -26,7 +26,7 @@ public class OrderHttpServerVerticle extends AbstractVerticle {
 
         final Router router =  Router.router(vertx);
         router.route("/orders/*").handler(BodyHandler.create()).failureHandler(failureHandler);
-        router.post("/orders").handler(orderRoutingHandler.addOrder()).failureHandler(failureHandler);
+        router.post("/orders").handler(orderRoutingHandler.orderProcessContext()).failureHandler(failureHandler);
 
         httpServer.requestHandler(router)
                 .listen(configuration.getPort());

@@ -59,6 +59,7 @@
         <module>orders</module>
         <module>payments</module>
         <module>commons</module>
+        <module>order-schema</module>
     </modules>
 
 </project>

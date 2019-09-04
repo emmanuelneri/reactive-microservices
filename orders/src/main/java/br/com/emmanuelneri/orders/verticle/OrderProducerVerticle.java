@@ -1,9 +1,11 @@
 package br.com.emmanuelneri.orders.verticle;
 
 import br.com.emmanuelneri.commons.infra.KafkaConfiguration;
-import br.com.emmanuelneri.orders.infra.Topic;
+import br.com.emmanuelneri.order.schema.OrderSchema;
+import br.com.emmanuelneri.order.schema.OrderTopic;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Future;
+import io.vertx.core.json.Json;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.kafka.client.producer.KafkaProducer;
@@ -17,7 +19,7 @@ import static br.com.emmanuelneri.orders.infra.EventBusAddress.RECEIVED_ORDER;
 public class OrderProducerVerticle extends AbstractVerticle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderProducerVerticle.class);
-    private static final String NEW_ORDER_TOPIC = Topic.ORDER.getTopic();
+    private static final String NEW_ORDER_TOPIC = OrderTopic.TOPIC.getName();
 
     private final KafkaConfiguration configuration;
 
@@ -32,11 +34,12 @@ public class OrderProducerVerticle extends AbstractVerticle {
 
         vertx.eventBus().localConsumer(RECEIVED_ORDER.getAddress(), message -> {
             final String key = UUID.randomUUID().toString();
-            final KafkaProducerRecord<String, String> kafkaProducerRecord = KafkaProducerRecord.create(NEW_ORDER_TOPIC, key, (String) message.body());
+            final OrderSchema orderSchema = Json.decodeValue(message.body().toString(), OrderSchema.class);
+            final KafkaProducerRecord<String, String> kafkaProducerRecord = KafkaProducerRecord.create(NEW_ORDER_TOPIC, key, Json.encode(orderSchema));
 
             producer.send(kafkaProducerRecord, result -> {
-                if(result.failed()) {
-                    LOGGER.error("message produce error {0}", kafkaProducerRecord);
+                if (result.failed()) {
+                    LOGGER.error("message produce error {0}", kafkaProducerRecord, result.cause());
                     return;
                 }
 

@@ -22,6 +22,11 @@
             <artifactId>commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>br.com.emmanuelneri</groupId>
+            <artifactId>order-schema</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 </project>
