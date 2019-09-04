@@ -12,7 +12,6 @@ import java.util.Map;
 
 import static br.com.emmanuelneri.payments.infra.EventBusAddress.NEW_PAYMENT;
 
-
 public class OrderConsumerVerticle extends AbstractVerticle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderConsumerVerticle.class);
