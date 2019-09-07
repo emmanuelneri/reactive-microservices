@@ -20,6 +20,7 @@
 
         <vertx.version>3.8.0</vertx.version>
         <lombok.version>1.18.8</lombok.version>
+        <modelmapper.version>2.3.0</modelmapper.version>
     </properties>
 
     <dependencies>
