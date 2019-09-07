@@ -46,6 +46,6 @@ public class OrderRoutingHandler {
     }
 
     private void process(final OrderSchema orderSchema) {
-        vertx.eventBus().send(RECEIVED_ORDER.getAddress(), Json.encode(orderSchema));
+        vertx.eventBus().publish(RECEIVED_ORDER.getAddress(), Json.encode(orderSchema));
     }
 }
