@@ -1,1 +1,0 @@
-create table if not exists sales_order (id BIGSERIAL PRIMARY KEY, identifier VARCHAR(100) NOT NULL, value NUMERIC(19,2) NOT NULL);

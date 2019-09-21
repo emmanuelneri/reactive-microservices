@@ -22,14 +22,14 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
 
-  orders-db:
+  customer-db:
     image: postgres:11-alpine
-    container_name: orders-db
+    container_name: customer-db
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: orders
+      POSTGRES_DB: customer
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - ./conf/orders-init.sql:/docker-entrypoint-initdb.d/orders-orders-init.sql
+      - ./conf/db/customer-init.sql:/docker-entrypoint-initdb.d/customer-init.sql

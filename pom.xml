@@ -57,10 +57,11 @@
     </dependencyManagement>
 
     <modules>
-        <module>orders</module>
-        <module>payments</module>
         <module>commons</module>
-        <module>order-schema</module>
+        <module>customer</module>
+        <module>schedule</module>
+        <module>payment</module>
+        <module>reports</module>
     </modules>
 
 </project>
