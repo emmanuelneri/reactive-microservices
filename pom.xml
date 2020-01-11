@@ -18,7 +18,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <vertx.version>3.8.0</vertx.version>
+        <vertx.version>3.8.4</vertx.version>
         <lombok.version>1.18.8</lombok.version>
         <modelmapper.version>2.3.0</modelmapper.version>
     </properties>
@@ -31,10 +31,6 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-kafka-client</artifactId>
         </dependency>
 
         <dependency>
@@ -55,13 +51,4 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
-    <modules>
-        <module>commons</module>
-        <module>customer</module>
-        <module>schedule</module>
-        <module>payment</module>
-        <module>reports</module>
-    </modules>
-
 </project>
