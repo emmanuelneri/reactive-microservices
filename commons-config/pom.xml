@@ -7,16 +7,15 @@
         <groupId>br.com.emmanuelneri</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>commons</artifactId>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>commons-config</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
         </dependency>
-
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-unit</artifactId>
