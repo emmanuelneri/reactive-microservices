@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>br.com.emmanuelneri</groupId>
-    <artifactId>reactive-architecture</artifactId>
+    <artifactId>blueprint-microservices</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>reactive-architecture</name>
-    <description>Rective Architecture</description>
+    <name>blueprint-microservices</name>
+    <description>Blueprint microservices</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,9 +18,9 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <vertx.version>3.8.4</vertx.version>
+        <vertx.version>3.8.5</vertx.version>
         <lombok.version>1.18.8</lombok.version>
-        <modelmapper.version>2.3.0</modelmapper.version>
+        <junit.version>4.13</junit.version>
     </properties>
 
     <dependencies>
@@ -51,4 +51,9 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <modules>
+        <module>schedule-connector</module>
+        <module>commons</module>
+    </modules>
 </project>
