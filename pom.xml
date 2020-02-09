@@ -21,6 +21,7 @@
         <vertx.version>3.8.5</vertx.version>
         <lombok.version>1.18.8</lombok.version>
         <jackson.version>2.9.9</jackson.version>
+        <modelmapper.version>2.3.0</modelmapper.version>
         <junit.version>4.13</junit.version>
     </properties>
 
@@ -59,5 +60,25 @@
         <module>commons-config</module>
         <module>commons-web</module>
         <module>commons-mapper</module>
+        <module>commons-exception</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.22.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>verify</goal>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
