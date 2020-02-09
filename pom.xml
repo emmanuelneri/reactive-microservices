@@ -20,6 +20,7 @@
 
         <vertx.version>3.8.5</vertx.version>
         <lombok.version>1.18.8</lombok.version>
+        <jackson.version>2.9.9</jackson.version>
         <junit.version>4.13</junit.version>
     </properties>
 
@@ -54,6 +55,9 @@
 
     <modules>
         <module>schedule-connector</module>
-        <module>commons</module>
+        <module>schedule-schema</module>
+        <module>commons-config</module>
+        <module>commons-web</module>
+        <module>commons-mapper</module>
     </modules>
 </project>
