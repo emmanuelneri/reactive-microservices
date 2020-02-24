@@ -47,4 +47,8 @@ public class Schedule {
         }
     }
 
+    public String createTopicKey() {
+        return customer.getDocumentNumber();
+    }
+
 }

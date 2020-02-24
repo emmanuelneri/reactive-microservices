@@ -21,15 +21,3 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-
-  customer-db:
-    image: postgres:11-alpine
-    container_name: customer-db
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: customer
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes:
-      - ./conf/db/customer-init.sql:/docker-entrypoint-initdb.d/customer-init.sql

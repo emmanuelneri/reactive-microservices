@@ -25,7 +25,15 @@ public class ScheduleProcessor extends AbstractVerticle {
         scheduleMapper.map(message, schedule -> {
             try {
                 schedule.validate();
-                message.reply(Json.encode(ProcessorResult.OK));
+                this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), Json.encode(schedule), async -> {
+                    if (async.failed()) {
+                        LOGGER.error("schedule validated request error", async.cause());
+                        message.reply(Json.encode(ProcessorResult.error("internal error")));
+                        return;
+                    }
+
+                    message.reply(ProcessorResult.OK_AS_JSON);
+                });
             } catch (ValidationException vex) {
                 message.reply(Json.encode(ProcessorResult.error(vex.getMessage())));
             }

@@ -1,6 +1,8 @@
 package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
+import br.com.emmanuelneri.blueprint.schedule.connector.domain.Events;
+import br.com.emmanuelneri.blueprint.schedule.connector.domain.ProcessorResult;
 import br.com.emmanuelneri.blueprint.schedule.connector.service.ScheduleProcessor;
 import br.com.emmanuelneri.schedule.schema.CustomerScheduleSchema;
 import br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema;
@@ -43,6 +45,8 @@ public class ScheduleEndpointIT {
         vertx.deployVerticle(new ScheduleProcessor());
         vertx.deployVerticle(new ScheduleEndpoint((router)));
 
+        mockProducerRequest();
+
         final HttpServer httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router)
                 .listen(PORT);
@@ -50,6 +54,7 @@ public class ScheduleEndpointIT {
 
     @Test
     public void shouldProcessSchema(final TestContext context) {
+
         final Async async = context.async();
         final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
         customerSchema.setDocumentNumber("043030493");
@@ -109,6 +114,11 @@ public class ScheduleEndpointIT {
                     Assert.assertEquals("dateTime invalid. Past dateTime is not allowed", result.bodyAsString());
                     async.complete();
                 });
+    }
+
+    private void mockProducerRequest() {
+        this.vertx.eventBus().consumer(Events.SCHEDULE_VALIDATED.name(),
+                message -> message.reply(ProcessorResult.OK_AS_JSON));
     }
 
 }

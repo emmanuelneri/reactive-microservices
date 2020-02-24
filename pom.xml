@@ -61,6 +61,7 @@
         <module>commons-web</module>
         <module>commons-mapper</module>
         <module>commons-exception</module>
+        <module>commons-kafka</module>
     </modules>
 
     <build>

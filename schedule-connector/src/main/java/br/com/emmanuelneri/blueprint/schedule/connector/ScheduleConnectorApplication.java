@@ -2,8 +2,10 @@ package br.com.emmanuelneri.blueprint.schedule.connector;
 
 import br.com.emmanuelneri.blueprint.commons.config.ConfigRetrieverConfiguration;
 import br.com.emmanuelneri.blueprint.commons.config.HttpServerConfiguration;
+import br.com.emmanuelneri.blueprint.kafka.KafkaProducerConfiguration;
 import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
 import br.com.emmanuelneri.blueprint.schedule.connector.interfaces.ScheduleEndpoint;
+import br.com.emmanuelneri.blueprint.schedule.connector.interfaces.ScheduleProducer;
 import br.com.emmanuelneri.blueprint.schedule.connector.service.ScheduleProcessor;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
@@ -28,10 +30,12 @@ public class ScheduleConnectorApplication {
 
             JsonConfiguration.setUpDefault();
             final JsonObject configuration = configurationHandler.result();
+            final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
             final Router router = Router.router(vertx);
 
-            vertx.deployVerticle(new ScheduleEndpoint(router));
+            vertx.deployVerticle(new ScheduleProducer(kafkaProducerConfiguration));
             vertx.deployVerticle(new ScheduleProcessor());
+            vertx.deployVerticle(new ScheduleEndpoint(router));
 
             startHttpServer(vertx, configuration, router);
         });
