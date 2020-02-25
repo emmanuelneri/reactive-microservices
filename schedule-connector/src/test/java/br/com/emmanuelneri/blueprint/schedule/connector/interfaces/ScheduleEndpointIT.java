@@ -15,13 +15,13 @@ import io.vertx.ext.unit.junit.VertxUnitRunner;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @RunWith(VertxUnitRunner.class)
 public class ScheduleEndpointIT {
@@ -31,13 +31,10 @@ public class ScheduleEndpointIT {
     private static final String URI = "/schedules";
 
     private Vertx vertx;
+    private HttpServer httpServer;
 
     @Before
     public void before() {
-        if (Objects.nonNull(this.vertx)) {
-            return;
-        }
-
         this.vertx = Vertx.vertx();
         JsonConfiguration.setUpDefault();
 
@@ -47,9 +44,15 @@ public class ScheduleEndpointIT {
 
         mockProducerRequest();
 
-        final HttpServer httpServer = this.vertx.createHttpServer();
-        httpServer.requestHandler(router)
+        this.httpServer = this.vertx.createHttpServer();
+        this.httpServer.requestHandler(router)
                 .listen(PORT);
+    }
+
+    @After
+    public void after() {
+        this.httpServer.close();
+        this.vertx.close();
     }
 
     @Test

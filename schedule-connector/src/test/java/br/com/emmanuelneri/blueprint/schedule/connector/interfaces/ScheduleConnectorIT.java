@@ -44,10 +44,6 @@ public class ScheduleConnectorIT {
 
     @Before
     public void before() {
-        if (Objects.nonNull(this.vertx)) {
-            return;
-        }
-
         final JsonObject configuration = new JsonObject()
                 .put("kafka.bootstrap.servers", kafka.getBootstrapServers())
                 .put("kafka.key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
