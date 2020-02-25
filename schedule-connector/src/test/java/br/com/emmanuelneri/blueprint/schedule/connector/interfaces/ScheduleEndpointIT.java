@@ -41,13 +41,13 @@ public class ScheduleEndpointIT {
         this.vertx = Vertx.vertx();
         JsonConfiguration.setUpDefault();
 
-        Router router = Router.router(vertx);
-        vertx.deployVerticle(new ScheduleProcessor());
-        vertx.deployVerticle(new ScheduleEndpoint((router)));
+        final Router router = Router.router(this.vertx);
+        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
 
         mockProducerRequest();
 
-        final HttpServer httpServer = vertx.createHttpServer();
+        final HttpServer httpServer = this.vertx.createHttpServer();
         httpServer.requestHandler(router)
                 .listen(PORT);
     }
@@ -66,7 +66,7 @@ public class ScheduleEndpointIT {
         schema.setDateTime(LocalDateTime.now().plusDays(1));
         schema.setDescription("Test");
 
-        final WebClient client = WebClient.create(vertx);
+        final WebClient client = WebClient.create(this.vertx);
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());
@@ -79,7 +79,7 @@ public class ScheduleEndpointIT {
     @Test
     public void shouldReturnBandRequestWithInvalidSchema(final TestContext context) {
         final Async async = context.async();
-        final WebClient client = WebClient.create(vertx);
+        final WebClient client = WebClient.create(this.vertx);
 
         final String schema = "{\"desc\":\123}";
         client.post(PORT, HOST, URI)
@@ -95,7 +95,7 @@ public class ScheduleEndpointIT {
     @Test
     public void shouldReturnBandRequestWithNoValidSchedule(final TestContext context) {
         final Async async = context.async();
-        final WebClient client = WebClient.create(vertx);
+        final WebClient client = WebClient.create(this.vertx);
 
         final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
         customerSchema.setDocumentNumber("043030493");
