@@ -86,6 +86,7 @@ public class ScheduleConnectorIT {
 
         final WebClient client = WebClient.create(vertx);
         client.post(PORT, HOST, URI)
+                .timeout(60000)
                 .sendJson(schedule, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());
                     final HttpResponse<Buffer> result = clientAsyncResult.result();

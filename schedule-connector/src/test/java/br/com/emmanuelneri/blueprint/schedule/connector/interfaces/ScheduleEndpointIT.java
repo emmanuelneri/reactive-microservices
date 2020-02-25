@@ -71,6 +71,7 @@ public class ScheduleEndpointIT {
 
         final WebClient client = WebClient.create(this.vertx);
         client.post(PORT, HOST, URI)
+                .timeout(60000)
                 .sendJson(schema, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
@@ -86,6 +87,7 @@ public class ScheduleEndpointIT {
 
         final String schema = "{\"desc\":\123}";
         client.post(PORT, HOST, URI)
+                .timeout(60000)
                 .sendJson(schema, clientAsyncResult -> {
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
                     Assert.assertEquals(400, result.statusCode());
@@ -111,6 +113,7 @@ public class ScheduleEndpointIT {
         schema.setDescription("Test");
 
         client.post(PORT, HOST, URI)
+                .timeout(60000)
                 .sendJson(schema, clientAsyncResult -> {
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
                     Assert.assertEquals(400, result.statusCode());
