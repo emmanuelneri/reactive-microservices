@@ -73,7 +73,6 @@ public class ScheduleConnectorIT {
 
     @Test
     public void shouldProcessSchedule(final TestContext context) {
-        final Async async = context.async();
         final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
         customerSchema.setDocumentNumber("948948393849");
         customerSchema.setName("Customer 1");
@@ -85,6 +84,7 @@ public class ScheduleConnectorIT {
         schedule.setDescription("Complete Test");
 
         final WebClient client = WebClient.create(vertx);
+        final Async async = context.async();
         client.post(PORT, HOST, URI)
                 .sendJson(schedule, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());

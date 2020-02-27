@@ -57,8 +57,6 @@ public class ScheduleEndpointIT {
 
     @Test
     public void shouldProcessSchema(final TestContext context) {
-
-        final Async async = context.async();
         final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
         customerSchema.setDocumentNumber("043030493");
         customerSchema.setName("Customer");
@@ -70,6 +68,7 @@ public class ScheduleEndpointIT {
         schema.setDescription("Test");
 
         final WebClient client = WebClient.create(this.vertx);
+        final Async async = context.async();
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());
@@ -81,10 +80,10 @@ public class ScheduleEndpointIT {
 
     @Test
     public void shouldReturnBandRequestWithInvalidSchema(final TestContext context) {
-        final Async async = context.async();
-        final WebClient client = WebClient.create(this.vertx);
-
         final String schema = "{\"desc\":\123}";
+
+        final WebClient client = WebClient.create(this.vertx);
+        final Async async = context.async();
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
@@ -97,9 +96,6 @@ public class ScheduleEndpointIT {
 
     @Test
     public void shouldReturnBandRequestWithNoValidSchedule(final TestContext context) {
-        final Async async = context.async();
-        final WebClient client = WebClient.create(this.vertx);
-
         final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
         customerSchema.setDocumentNumber("043030493");
         customerSchema.setName("Customer");
@@ -110,6 +106,8 @@ public class ScheduleEndpointIT {
         schema.setDateTime(LocalDateTime.now().minusHours(1));
         schema.setDescription("Test");
 
+        final WebClient client = WebClient.create(this.vertx);
+        final Async async = context.async();
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
