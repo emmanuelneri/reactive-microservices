@@ -29,6 +29,7 @@ public class ScheduleEndpointIT {
     private static final int PORT = 9999;
     private static final String HOST = "localhost";
     private static final String URI = "/schedules";
+    private static final String SCHEDULE_RECEIVED_TEST = "SCHEDULE_RECEIVED_TEST";
 
     private Vertx vertx;
     private HttpServer httpServer;
@@ -39,7 +40,7 @@ public class ScheduleEndpointIT {
         JsonConfiguration.setUpDefault();
 
         final Router router = Router.router(this.vertx);
-        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleProcessor(SCHEDULE_RECEIVED_TEST));
         this.vertx.deployVerticle(new ScheduleEndpoint((router)));
 
         mockProducerRequest();
@@ -118,7 +119,7 @@ public class ScheduleEndpointIT {
     }
 
     private void mockProducerRequest() {
-        this.vertx.eventBus().localConsumer(Events.SCHEDULE_VALIDATED.name(),
+        this.vertx.eventBus().localConsumer(SCHEDULE_RECEIVED_TEST,
                 message -> message.reply(ProcessorResult.OK_AS_JSON));
     }
 
