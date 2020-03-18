@@ -6,6 +6,7 @@ import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
 import br.com.emmanuelneri.blueprint.schedule.connector.service.ScheduleProcessor;
 import br.com.emmanuelneri.schedule.schema.CustomerScheduleSchema;
 import br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema;
+import com.salesforce.kafka.test.junit4.SharedKafkaTestResource;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -21,17 +22,19 @@ import io.vertx.kafka.client.consumer.KafkaConsumer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.testcontainers.containers.KafkaContainer;
 
 import java.time.LocalDateTime;
 import java.util.Map;
-import java.util.Objects;
 
 @RunWith(VertxUnitRunner.class)
 public class ScheduleConnectorIT {
+
+    @ClassRule
+    public static final SharedKafkaTestResource sharedKafkaTestResource = new SharedKafkaTestResource();
 
     private static final int PORT = 8888;
     private static final String HOST = "localhost";
@@ -40,14 +43,12 @@ public class ScheduleConnectorIT {
     private Vertx vertx;
     private HttpServer httpServer;
 
-    @Rule
-    public KafkaContainer kafka = new KafkaContainer("5.2.1");
     private KafkaConsumer<String, String> kafkaConsumer;
 
     @Before
     public void before() {
         final JsonObject configuration = new JsonObject()
-                .put("kafka.bootstrap.servers", kafka.getBootstrapServers())
+                .put("kafka.bootstrap.servers", sharedKafkaTestResource.getKafkaConnectString())
                 .put("kafka.key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
                 .put("kafka.value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
                 .put("kafka.key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
@@ -102,7 +103,6 @@ public class ScheduleConnectorIT {
                     kafkaConsumer.handler(consumerRecord -> {
                         Assert.assertNotNull(consumerRecord.key());
                         Assert.assertEquals(Json.encode(schedule), consumerRecord.value());
-                        kafka.close();
                         async.complete();
                     });
                 });
