@@ -102,6 +102,7 @@ public class ScheduleConnectorIT {
                     kafkaConsumer.handler(consumerRecord -> {
                         Assert.assertNotNull(consumerRecord.key());
                         Assert.assertEquals(Json.encode(schedule), consumerRecord.value());
+                        kafka.close();
                         async.complete();
                     });
                 });
