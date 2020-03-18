@@ -15,16 +15,6 @@ public class ScheduleProcessor extends AbstractVerticle {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleProcessor.class);
     private ScheduleMapper scheduleMapper;
 
-    private final String scheduleEventBusName;
-
-    public ScheduleProcessor() {
-        this.scheduleEventBusName = Events.SCHEDULE_VALIDATED.name();
-    }
-
-    public ScheduleProcessor(final String scheduleEventBusName) {
-        this.scheduleEventBusName = scheduleEventBusName;
-    }
-
     @Override
     public void start() throws Exception {
         this.scheduleMapper = ScheduleMapper.create();
@@ -35,7 +25,7 @@ public class ScheduleProcessor extends AbstractVerticle {
         scheduleMapper.map(message, schedule -> {
             try {
                 schedule.validate();
-                this.vertx.eventBus().request(scheduleEventBusName, Json.encode(schedule), async -> {
+                this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), Json.encode(schedule), async -> {
                     if (async.failed()) {
                         LOGGER.error("schedule validated request error", async.cause());
                         message.reply(Json.encode(ProcessorResult.error("internal error")));
