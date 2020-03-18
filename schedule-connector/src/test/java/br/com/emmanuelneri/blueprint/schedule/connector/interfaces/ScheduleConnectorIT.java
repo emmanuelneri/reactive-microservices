@@ -18,6 +18,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +38,7 @@ public class ScheduleConnectorIT {
     private static final String URI = "/schedules";
 
     private Vertx vertx;
+    private HttpServer httpServer;
 
     @Rule
     public KafkaContainer kafka = new KafkaContainer("5.2.1");
@@ -66,9 +68,15 @@ public class ScheduleConnectorIT {
         this.kafkaConsumer = KafkaConsumer.create(this.vertx, kafkaConsumerConfiguration);
         this.kafkaConsumer.subscribe(ScheduleProducer.SCHEDULE_REQUEST_TOPIC);
 
-        final HttpServer httpServer = this.vertx.createHttpServer();
+        this.httpServer = this.vertx.createHttpServer();
         httpServer.requestHandler(router)
                 .listen(PORT);
+    }
+
+    @After
+    public void after() {
+        this.httpServer.close();
+        this.vertx.close();
     }
 
     @Test

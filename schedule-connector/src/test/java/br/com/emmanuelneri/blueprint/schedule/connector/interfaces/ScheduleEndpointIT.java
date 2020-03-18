@@ -118,7 +118,7 @@ public class ScheduleEndpointIT {
     }
 
     private void mockProducerRequest() {
-        this.vertx.eventBus().consumer(Events.SCHEDULE_VALIDATED.name(),
+        this.vertx.eventBus().localConsumer(Events.SCHEDULE_VALIDATED.name(),
                 message -> message.reply(ProcessorResult.OK_AS_JSON));
     }
 
