@@ -13,7 +13,7 @@ public class ConfigRetrieverConfigurationTest {
     public void wrongApplicationNameShouldFailTest(final TestContext context) {
         final Vertx vertx = Vertx.vertx();
 
-        ConfigRetrieverConfiguration.configure(vertx, "teste")
+        ConfigRetrieverConfiguration.configure(vertx, "test")
                 .getConfig(configurationHandler -> context.asyncAssertFailure());
     }
 
