@@ -56,6 +56,29 @@ public class ScheduleEndpointIT {
     }
 
     @Test
+    public void shouldProcessSchema(final TestContext context) {
+        final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
+        customerSchema.setDocumentNumber("043030493");
+        customerSchema.setName("Customer");
+        customerSchema.setPhone("4499099493");
+
+        final ScheduleEndpointSchema schema = new ScheduleEndpointSchema();
+        schema.setCustomer(customerSchema);
+        schema.setDateTime(LocalDateTime.now().plusDays(1));
+        schema.setDescription("Test");
+
+        final WebClient client = WebClient.create(this.vertx);
+        final Async async = context.async();
+        client.post(PORT, HOST, URI)
+                .sendJson(schema, clientAsyncResult -> {
+                    Assert.assertFalse(clientAsyncResult.failed());
+                    final HttpResponse<Buffer> result = clientAsyncResult.result();
+                    Assert.assertEquals(201, result.statusCode());
+                    async.complete();
+                });
+    }
+
+    @Test
     public void shouldReturnBandRequestWithInvalidSchema(final TestContext context) {
         final String schema = "{\"desc\":\123}";
 
