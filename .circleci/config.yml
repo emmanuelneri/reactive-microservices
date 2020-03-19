@@ -9,19 +9,24 @@ jobs:
       - image: circleci/openjdk:8
     steps:
       - checkout
+      - restore_cache:
+          key: circleci-blueprint-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B compile -DskipTests
   unit-test:
     docker:
       - image: circleci/openjdk:8
     steps:
       - checkout
+      - restore_cache:
+          key: circleci-blueprint-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B test
-
   integration-test:
     docker:
       - image: circleci/openjdk:8
     steps:
       - checkout
+      - restore_cache:
+          key: circleci-blueprint-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B verify
 
 workflows:
