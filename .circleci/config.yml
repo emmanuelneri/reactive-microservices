@@ -23,8 +23,7 @@ jobs:
           key: circleci-blueprint-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B test
   integration-test:
-    machine:
-      - image: circleci/openjdk:8
+    machine: true
     steps:
       - checkout
       - restore_cache:
