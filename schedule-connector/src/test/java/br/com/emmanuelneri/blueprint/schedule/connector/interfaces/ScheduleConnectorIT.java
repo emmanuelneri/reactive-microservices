@@ -18,10 +18,13 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.Ignore;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.testcontainers.containers.KafkaContainer;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -36,16 +39,14 @@ public class ScheduleConnectorIT {
     private Vertx vertx;
     private HttpServer httpServer;
 
-    // TODO testcontainer not execution on github action
-//    @Rule
-//    public KafkaContainer kafka = new KafkaContainer("5.2.1");
+    @Rule
+    public KafkaContainer kafka = new KafkaContainer("5.2.1");
     private KafkaConsumer<String, String> kafkaConsumer;
 
-    //    @Before
+    @Before
     public void before() {
         final JsonObject configuration = new JsonObject()
-//                .put("kafka.bootstrap.servers", kafka.getBootstrapServers())
-                .put("kafka.bootstrap.servers", "localhost:9092")
+                .put("kafka.bootstrap.servers", kafka.getBootstrapServers())
                 .put("kafka.key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
                 .put("kafka.value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
                 .put("kafka.key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
@@ -71,14 +72,13 @@ public class ScheduleConnectorIT {
                 .listen(PORT);
     }
 
-    //    @After
+    @After
     public void after() {
         this.httpServer.close();
         this.vertx.close();
     }
 
     @Test
-    @Ignore
     public void shouldProcessSchedule(final TestContext context) {
         final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
         customerSchema.setDocumentNumber("948948393849");
