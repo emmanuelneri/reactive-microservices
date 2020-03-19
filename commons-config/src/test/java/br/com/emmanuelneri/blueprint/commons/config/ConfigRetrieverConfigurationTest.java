@@ -3,6 +3,7 @@ package br.com.emmanuelneri.blueprint.commons.config;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -10,6 +11,7 @@ import org.junit.runner.RunWith;
 public class ConfigRetrieverConfigurationTest {
 
     @Test
+    @Ignore
     public void wrongApplicationNameShouldFailTest(final TestContext context) {
         final Vertx vertx = Vertx.vertx();
 
