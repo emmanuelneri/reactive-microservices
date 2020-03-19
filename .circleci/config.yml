@@ -3,10 +3,10 @@ version: 2.1
 orbs:
   maven: circleci/maven@0.0.12
 
-executorType: machine
-
 jobs:
   compile:
+    docker:
+      - image: circleci/openjdk:8
     steps:
       - checkout
       - run: mvn -B compile -DskipTests
@@ -15,12 +15,15 @@ jobs:
             - ~/.m2
           key: circleci-blueprint-microservices-{{ checksum "pom.xml" }}
   unit-test:
+    docker:
+      - image: circleci/openjdk:8
     steps:
       - checkout
       - restore_cache:
           key: circleci-blueprint-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B test
   integration-test:
+    executorType: machine
     steps:
       - checkout
       - restore_cache:
