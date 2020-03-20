@@ -19,7 +19,6 @@ import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -94,13 +93,13 @@ public class ScheduleConnectorIT {
         final Async async = context.async();
         client.post(PORT, HOST, URI)
                 .sendJson(schedule, clientAsyncResult -> {
-                    Assert.assertFalse(clientAsyncResult.failed());
+                    context.assertFalse(clientAsyncResult.failed());
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(201, result.statusCode());
+                    context.assertEquals(201, result.statusCode());
 
                     kafkaConsumer.handler(consumerRecord -> {
-                        Assert.assertNotNull(consumerRecord.key());
-                        Assert.assertEquals(Json.encode(schedule), consumerRecord.value());
+                        context.assertNotNull(consumerRecord.key());
+                        context.assertEquals(Json.encode(schedule), consumerRecord.value());
                         async.complete();
                     });
                 });

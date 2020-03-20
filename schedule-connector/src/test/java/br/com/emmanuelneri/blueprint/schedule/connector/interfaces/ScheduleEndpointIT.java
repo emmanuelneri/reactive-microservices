@@ -16,7 +16,6 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -71,9 +70,9 @@ public class ScheduleEndpointIT {
         final Async async = context.async();
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
-                    Assert.assertFalse(clientAsyncResult.failed());
+                    context.assertFalse(clientAsyncResult.failed());
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(201, result.statusCode());
+                    context.assertEquals(201, result.statusCode());
                     async.complete();
                 });
     }
@@ -87,8 +86,8 @@ public class ScheduleEndpointIT {
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(400, result.statusCode());
-                    Assert.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
+                    context.assertEquals(400, result.statusCode());
+                    context.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
                             " at [Source: (String)\"\"{\\\"desc\\\":S}\"\"; line: 1, column: 1]", result.bodyAsString());
                     async.complete();
                 });
@@ -111,8 +110,8 @@ public class ScheduleEndpointIT {
         client.post(PORT, HOST, URI)
                 .sendJson(schema, clientAsyncResult -> {
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(400, result.statusCode());
-                    Assert.assertEquals("dateTime invalid. Past dateTime is not allowed", result.bodyAsString());
+                    context.assertEquals(400, result.statusCode());
+                    context.assertEquals("dateTime invalid. Past dateTime is not allowed", result.bodyAsString());
                     async.complete();
                 });
     }
