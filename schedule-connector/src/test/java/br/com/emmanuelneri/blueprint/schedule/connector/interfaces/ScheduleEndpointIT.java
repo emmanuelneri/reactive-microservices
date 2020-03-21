@@ -30,27 +30,16 @@ public class ScheduleEndpointIT {
     private static final String URI = "/schedules";
 
     private Vertx vertx;
-    private HttpServer httpServer;
 
     @Before
     public void before() {
         this.vertx = Vertx.vertx();
         JsonConfiguration.setUpDefault();
-
-        final Router router = Router.router(this.vertx);
-        this.vertx.deployVerticle(new ScheduleProcessor());
-        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
-
         mockProducerRequest();
-
-        this.httpServer = this.vertx.createHttpServer();
-        this.httpServer.requestHandler(router)
-                .listen(PORT);
     }
 
     @After
     public void after() {
-        this.httpServer.close();
         this.vertx.close();
     }
 
@@ -66,14 +55,32 @@ public class ScheduleEndpointIT {
         schema.setDateTime(LocalDateTime.now().plusDays(1));
         schema.setDescription("Test");
 
+        final Router router = Router.router(this.vertx);
+        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+
         final WebClient client = WebClient.create(this.vertx);
+        final HttpServer httpServer = this.vertx.createHttpServer();
+
         final Async async = context.async();
-        client.post(PORT, HOST, URI)
-                .sendJson(schema, clientAsyncResult -> {
-                    context.assertFalse(clientAsyncResult.failed());
-                    final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    context.assertEquals(201, result.statusCode());
-                    async.complete();
+        httpServer.requestHandler(router)
+                .listen(PORT, serverAsyncResult -> {
+                    if (serverAsyncResult.failed()) {
+                        context.fail(serverAsyncResult.cause());
+                    }
+
+                    client.post(PORT, HOST, URI)
+                            .sendJson(schema, clientAsyncResult -> {
+                                if (clientAsyncResult.failed()) {
+                                    context.fail(clientAsyncResult.cause());
+                                }
+
+                                final HttpResponse<Buffer> result = clientAsyncResult.result();
+                                context.assertEquals(201, result.statusCode());
+
+                                httpServer.close();
+                                async.complete();
+                            });
                 });
     }
 
@@ -81,15 +88,34 @@ public class ScheduleEndpointIT {
     public void shouldReturnBandRequestWithInvalidSchema(final TestContext context) {
         final String schema = "{\"desc\":\123}";
 
+        final Router router = Router.router(this.vertx);
+        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+
         final WebClient client = WebClient.create(this.vertx);
+        final HttpServer httpServer = this.vertx.createHttpServer();
+
         final Async async = context.async();
-        client.post(PORT, HOST, URI)
-                .sendJson(schema, clientAsyncResult -> {
-                    final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    context.assertEquals(400, result.statusCode());
-                    context.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
-                            " at [Source: (String)\"\"{\\\"desc\\\":S}\"\"; line: 1, column: 1]", result.bodyAsString());
-                    async.complete();
+        httpServer.requestHandler(router)
+                .listen(PORT, serverAsyncResult -> {
+                    if (serverAsyncResult.failed()) {
+                        context.fail(serverAsyncResult.cause());
+                    }
+
+                    client.post(PORT, HOST, URI)
+                            .sendJson(schema, clientAsyncResult -> {
+                                if (clientAsyncResult.failed()) {
+                                    context.fail(clientAsyncResult.cause());
+                                }
+
+                                final HttpResponse<Buffer> result = clientAsyncResult.result();
+                                context.assertEquals(400, result.statusCode());
+                                context.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
+                                        " at [Source: (String)\"\"{\\\"desc\\\":S}\"\"; line: 1, column: 1]", result.bodyAsString());
+
+                                httpServer.close();
+                                async.complete();
+                            });
                 });
     }
 
@@ -105,14 +131,33 @@ public class ScheduleEndpointIT {
         schema.setDateTime(LocalDateTime.now().minusHours(1));
         schema.setDescription("Test");
 
+        final Router router = Router.router(this.vertx);
+        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+
         final WebClient client = WebClient.create(this.vertx);
+        final HttpServer httpServer = this.vertx.createHttpServer();
+
         final Async async = context.async();
-        client.post(PORT, HOST, URI)
-                .sendJson(schema, clientAsyncResult -> {
-                    final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    context.assertEquals(400, result.statusCode());
-                    context.assertEquals("dateTime invalid. Past dateTime is not allowed", result.bodyAsString());
-                    async.complete();
+        httpServer.requestHandler(router)
+                .listen(PORT, serverAsyncResult -> {
+                    if (serverAsyncResult.failed()) {
+                        context.fail(serverAsyncResult.cause());
+                    }
+
+                    client.post(PORT, HOST, URI)
+                            .sendJson(schema, clientAsyncResult -> {
+                                if (clientAsyncResult.failed()) {
+                                    context.fail(clientAsyncResult.cause());
+                                }
+
+                                final HttpResponse<Buffer> result = clientAsyncResult.result();
+                                context.assertEquals(400, result.statusCode());
+                                context.assertEquals("dateTime invalid. Past dateTime is not allowed", result.bodyAsString());
+
+                                httpServer.close();
+                                async.complete();
+                            });
                 });
     }
 
@@ -120,5 +165,4 @@ public class ScheduleEndpointIT {
         this.vertx.eventBus().localConsumer(Events.SCHEDULE_VALIDATED.name(),
                 message -> message.reply(ProcessorResult.OK_AS_JSON));
     }
-
 }
