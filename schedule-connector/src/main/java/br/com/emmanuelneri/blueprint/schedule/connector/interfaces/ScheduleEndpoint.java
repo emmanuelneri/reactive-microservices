@@ -2,12 +2,13 @@ package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.blueprint.commons.web.FailureHandler;
 import br.com.emmanuelneri.blueprint.schedule.connector.domain.Events;
-import br.com.emmanuelneri.blueprint.schedule.connector.domain.ProcessorResult;
+import br.com.emmanuelneri.blueprint.vertx.eventbus.ReplyResult;
+import br.com.emmanuelneri.blueprint.vertx.eventbus.RetryResultStatus;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -33,8 +34,9 @@ public class ScheduleEndpoint extends AbstractVerticle {
 
     private Handler<RoutingContext> scheduleReceivedRoutingHandler() {
         return routingContext -> {
-            LOGGER.info("schedule received {0}", routingContext.getBody());
-            this.vertx.eventBus().request(Events.SCHEDULE_RECEIVED.name(), routingContext.getBody(), async -> {
+            final String body = routingContext.getBodyAsString();
+            LOGGER.info("schedule received {0}", body);
+            this.vertx.eventBus().<JsonObject>request(Events.SCHEDULE_RECEIVED.name(), body, async -> {
                 if (async.failed()) {
                     LOGGER.error("internal error", async.cause());
                     routingContext
@@ -45,17 +47,17 @@ public class ScheduleEndpoint extends AbstractVerticle {
                     return;
                 }
 
-                final ProcessorResult processorResult = Json.decodeValue(async.result().body().toString(), ProcessorResult.class);
+                final ReplyResult replyResult = async.result().body().mapTo(ReplyResult.class);
                 routingContext
                         .response()
-                        .setStatusCode(getHttpStatus(processorResult))
-                        .end(processorResult.getMessage());
+                        .setStatusCode(getHttpStatus(replyResult))
+                        .end(replyResult.getMessage());
             });
         };
     }
 
-    private int getHttpStatus(final ProcessorResult processorResult) {
-        return processorResult.getStatus() == ProcessorResult.Status.OK
+    private int getHttpStatus(final ReplyResult replyResult) {
+        return replyResult.getStatus() == RetryResultStatus.OK
                 ? HttpResponseStatus.CREATED.code()
                 : HttpResponseStatus.BAD_REQUEST.code();
     }

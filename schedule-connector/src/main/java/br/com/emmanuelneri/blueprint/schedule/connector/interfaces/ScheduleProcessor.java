@@ -1,12 +1,11 @@
-package br.com.emmanuelneri.blueprint.schedule.connector.service;
+package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.blueprint.exception.ValidationException;
 import br.com.emmanuelneri.blueprint.schedule.connector.domain.Events;
-import br.com.emmanuelneri.blueprint.schedule.connector.domain.ProcessorResult;
-import br.com.emmanuelneri.blueprint.schedule.connector.interfaces.ScheduleMapper;
+import br.com.emmanuelneri.blueprint.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
-import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
@@ -21,25 +20,25 @@ public class ScheduleProcessor extends AbstractVerticle {
         this.vertx.eventBus().consumer(Events.SCHEDULE_RECEIVED.name(), this::processSchema);
     }
 
-    private void processSchema(final Message<Object> message) {
+    private void processSchema(final Message<String> message) {
         scheduleMapper.map(message, schedule -> {
             try {
                 schedule.validate();
-                this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), Json.encode(schedule), async -> {
+                this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), async -> {
                     if (async.failed()) {
                         LOGGER.error("schedule validated request error", async.cause());
-                        message.reply(Json.encode(ProcessorResult.error("internal error")));
+                        message.reply(ReplyResult.error("internal error").asJson());
                         return;
                     }
 
-                    message.reply(ProcessorResult.OK_AS_JSON);
+                    message.reply(ReplyResult.OK.asJson());
                 });
             } catch (ValidationException vex) {
-                message.reply(Json.encode(ProcessorResult.error(vex.getMessage())));
+                message.reply(ReplyResult.error(vex.getMessage()).asJson());
             }
         }, error -> {
             LOGGER.error("conversion failed", error);
-            message.reply(Json.encode(ProcessorResult.error(String.format("Invalid schema: %s", error.getMessage()))));
+            message.reply(ReplyResult.error(String.format("Invalid schema: %s", error.getMessage())).asJson());
         });
     }
 }

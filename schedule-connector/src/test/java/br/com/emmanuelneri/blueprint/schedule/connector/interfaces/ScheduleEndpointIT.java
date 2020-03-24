@@ -2,8 +2,7 @@ package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
 import br.com.emmanuelneri.blueprint.schedule.connector.domain.Events;
-import br.com.emmanuelneri.blueprint.schedule.connector.domain.ProcessorResult;
-import br.com.emmanuelneri.blueprint.schedule.connector.service.ScheduleProcessor;
+import br.com.emmanuelneri.blueprint.vertx.eventbus.ReplyResult;
 import br.com.emmanuelneri.schedule.schema.CustomerScheduleSchema;
 import br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema;
 import io.vertx.core.Vertx;
@@ -163,6 +162,6 @@ public class ScheduleEndpointIT {
 
     private void mockProducerRequest() {
         this.vertx.eventBus().localConsumer(Events.SCHEDULE_VALIDATED.name(),
-                message -> message.reply(ProcessorResult.OK_AS_JSON));
+                message -> message.reply(ReplyResult.OK.asJson()));
     }
 }

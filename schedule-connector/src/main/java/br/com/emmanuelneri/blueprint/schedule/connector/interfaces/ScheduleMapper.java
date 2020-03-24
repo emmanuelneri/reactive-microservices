@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(staticName = "create")
 public final class ScheduleMapper {
 
-    public void map(final Message<Object> message,
+    public void map(final Message<String> message,
                     final Handler<Schedule> successHandler,
                     final Handler<Throwable> errorHandler) {
         try {
-            final ScheduleEndpointSchema schema = Json.decodeValue(message.body().toString(), ScheduleEndpointSchema.class);
+            final ScheduleEndpointSchema schema = Json.decodeValue(message.body(), ScheduleEndpointSchema.class);
             successHandler.handle(map(schema));
         } catch (Exception ex) {
             errorHandler.handle(ex);
