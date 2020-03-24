@@ -34,11 +34,15 @@ public class ScheduleEndpoint extends AbstractVerticle {
 
     private Handler<RoutingContext> scheduleReceivedRoutingHandler() {
         return routingContext -> {
+            final Promise<ReplyResult> promise = Promise.promise();
             final String body = routingContext.getBodyAsString();
             LOGGER.info("schedule received {0}", body);
-            this.vertx.eventBus().<JsonObject>request(Events.SCHEDULE_RECEIVED.name(), body, async -> {
-                if (async.failed()) {
-                    LOGGER.error("internal error", async.cause());
+
+            processSchedule(body, promise);
+
+            promise.future().setHandler(asyncResult -> {
+                if (asyncResult.failed()) {
+                    LOGGER.error("internal error", asyncResult.cause());
                     routingContext
                             .response()
                             .setStatusCode(500)
@@ -47,13 +51,25 @@ public class ScheduleEndpoint extends AbstractVerticle {
                     return;
                 }
 
-                final ReplyResult replyResult = async.result().body().mapTo(ReplyResult.class);
+                final ReplyResult replyResult = asyncResult.result();
                 routingContext
                         .response()
                         .setStatusCode(getHttpStatus(replyResult))
                         .end(replyResult.getMessage());
             });
         };
+    }
+
+    private void processSchedule(final String body, final Promise<ReplyResult> promise) {
+        this.vertx.eventBus().<JsonObject>request(Events.SCHEDULE_RECEIVED.name(), body, async -> {
+            if (async.failed()) {
+                promise.fail(async.cause());
+                return;
+            }
+
+            final ReplyResult replyResult = async.result().body().mapTo(ReplyResult.class);
+            promise.complete(replyResult);
+        });
     }
 
     private int getHttpStatus(final ReplyResult replyResult) {
