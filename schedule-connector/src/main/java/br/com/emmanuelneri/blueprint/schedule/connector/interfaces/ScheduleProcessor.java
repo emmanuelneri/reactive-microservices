@@ -2,8 +2,12 @@ package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.blueprint.exception.ValidationException;
 import br.com.emmanuelneri.blueprint.schedule.connector.domain.Events;
+import br.com.emmanuelneri.blueprint.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.blueprint.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResult;
+import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -21,24 +25,52 @@ public class ScheduleProcessor extends AbstractVerticle {
     }
 
     private void processSchema(final Message<String> message) {
-        scheduleMapper.map(message, schedule -> {
-            try {
-                schedule.validate();
-                this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), async -> {
-                    if (async.failed()) {
-                        LOGGER.error("schedule validated request error", async.cause());
+        scheduleMapper.map(message, mapperAsyncResult -> {
+            if (mapperAsyncResult.failed()) {
+                LOGGER.error("conversion failed", mapperAsyncResult.cause());
+                message.reply(ReplyResult.error(String.format("Invalid schema: %s", mapperAsyncResult.cause().getMessage())).asJson());
+                return;
+            }
+
+            final Schedule schedule = mapperAsyncResult.result();
+            validate(schedule, validateAsyncResult -> {
+                if (validateAsyncResult.failed()) {
+                    LOGGER.error("invalid schema", mapperAsyncResult.cause());
+                    message.reply(ReplyResult.error(validateAsyncResult.cause().getMessage()).asJson());
+                    return;
+                }
+
+                sendToProduce(schedule, sendAsyncResult -> {
+                    if (sendAsyncResult.failed()) {
+                        LOGGER.error("schedule producer error", sendAsyncResult.cause());
                         message.reply(ReplyResult.error("internal error").asJson());
                         return;
                     }
 
                     message.reply(ReplyResult.OK.asJson());
                 });
-            } catch (ValidationException vex) {
-                message.reply(ReplyResult.error(vex.getMessage()).asJson());
-            }
-        }, error -> {
-            LOGGER.error("conversion failed", error);
-            message.reply(ReplyResult.error(String.format("Invalid schema: %s", error.getMessage())).asJson());
+            });
         });
     }
+
+    private void validate(final Schedule schedule, final Handler<AsyncResult<Void>> resultHandler) {
+        try {
+            schedule.validate();
+            resultHandler.handle(Future.succeededFuture());
+        } catch (final ValidationException vex) {
+            resultHandler.handle(Future.failedFuture(vex));
+        }
+    }
+
+    private void sendToProduce(final Schedule schedule, final Handler<AsyncResult<Void>> resultHandler) {
+        this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), requestAsyncResult -> {
+            if (requestAsyncResult.failed()) {
+                resultHandler.handle(Future.failedFuture(requestAsyncResult.cause()));
+                return;
+            }
+
+            resultHandler.handle(Future.succeededFuture());
+        });
+    }
+
 }
