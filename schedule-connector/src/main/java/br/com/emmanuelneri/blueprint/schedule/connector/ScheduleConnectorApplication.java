@@ -2,7 +2,7 @@ package br.com.emmanuelneri.blueprint.schedule.connector;
 
 import br.com.emmanuelneri.blueprint.commons.config.ConfigRetrieverConfiguration;
 import br.com.emmanuelneri.blueprint.commons.config.HttpServerConfiguration;
-import br.com.emmanuelneri.blueprint.kafka.KafkaProducerConfiguration;
+import br.com.emmanuelneri.blueprint.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
 import br.com.emmanuelneri.blueprint.schedule.connector.interfaces.ScheduleEndpoint;
 import br.com.emmanuelneri.blueprint.schedule.connector.interfaces.ScheduleProcessor;

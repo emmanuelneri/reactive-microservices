@@ -16,10 +16,6 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-kafka-client</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>br.com.emmanuelneri</groupId>
@@ -51,11 +47,6 @@
             <artifactId>commons-kafka</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>br.com.emmanuelneri</groupId>
-            <artifactId>commons-vertx</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>
@@ -76,7 +67,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
-            <version>1.12.5</version>
+            <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

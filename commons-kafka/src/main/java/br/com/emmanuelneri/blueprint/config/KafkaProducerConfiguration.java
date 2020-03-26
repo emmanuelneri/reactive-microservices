@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.blueprint.kafka;
+package br.com.emmanuelneri.blueprint.config;
 
 import io.vertx.core.json.JsonObject;
 
