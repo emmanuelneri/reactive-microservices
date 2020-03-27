@@ -73,7 +73,7 @@ public class ScheduleEndpointIT {
                 .sendJson(schema, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(201, result.statusCode());
+                    Assert.assertEquals(202, result.statusCode());
                     async.complete();
                 });
     }

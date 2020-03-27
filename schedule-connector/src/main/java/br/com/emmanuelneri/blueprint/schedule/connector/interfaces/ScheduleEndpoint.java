@@ -56,7 +56,7 @@ public class ScheduleEndpoint extends AbstractVerticle {
 
     private int getHttpStatus(final ProcessorResult processorResult) {
         return processorResult.getStatus() == ProcessorResult.Status.OK
-                ? HttpResponseStatus.CREATED.code()
+                ? HttpResponseStatus.ACCEPTED.code()
                 : HttpResponseStatus.BAD_REQUEST.code();
     }
 }

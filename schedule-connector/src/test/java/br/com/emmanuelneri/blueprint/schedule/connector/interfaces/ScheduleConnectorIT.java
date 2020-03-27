@@ -96,7 +96,7 @@ public class ScheduleConnectorIT {
                 .sendJson(schedule, clientAsyncResult -> {
                     Assert.assertFalse(clientAsyncResult.failed());
                     final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(201, result.statusCode());
+                    Assert.assertEquals(202, result.statusCode());
 
                     kafkaConsumer.handler(consumerRecord -> {
                         Assert.assertNotNull(consumerRecord.key());
