@@ -1,9 +1,8 @@
 package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
-import br.com.emmanuelneri.blueprint.kafka.KafkaConsumerConfiguration;
-import br.com.emmanuelneri.blueprint.kafka.KafkaProducerConfiguration;
+import br.com.emmanuelneri.blueprint.config.KafkaConsumerConfiguration;
+import br.com.emmanuelneri.blueprint.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
-import br.com.emmanuelneri.blueprint.schedule.connector.service.ScheduleProcessor;
 import br.com.emmanuelneri.schedule.schema.CustomerScheduleSchema;
 import br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema;
 import io.vertx.core.Vertx;
