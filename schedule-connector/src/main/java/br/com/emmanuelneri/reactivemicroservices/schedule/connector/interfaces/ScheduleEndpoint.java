@@ -67,7 +67,8 @@ public class ScheduleEndpoint extends AbstractVerticle {
                 return;
             }
 
-            promise.complete();
+            final ReplyResult replyResult = async.result().body().mapTo(ReplyResult.class);
+            promise.complete(replyResult);
         });
     }
 
