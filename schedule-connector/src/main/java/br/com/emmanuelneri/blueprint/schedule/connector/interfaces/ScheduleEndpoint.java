@@ -2,12 +2,13 @@ package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.blueprint.commons.web.FailureHandler;
 import br.com.emmanuelneri.blueprint.schedule.connector.domain.Events;
-import br.com.emmanuelneri.blueprint.schedule.connector.domain.ProcessorResult;
+import br.com.emmanuelneri.blueprint.vertx.eventbus.ReplyResult;
+import br.com.emmanuelneri.blueprint.vertx.eventbus.RetryResultStatus;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.Router;
@@ -33,10 +34,15 @@ public class ScheduleEndpoint extends AbstractVerticle {
 
     private Handler<RoutingContext> scheduleReceivedRoutingHandler() {
         return routingContext -> {
-            LOGGER.info("schedule received {0}", routingContext.getBody());
-            this.vertx.eventBus().request(Events.SCHEDULE_RECEIVED.name(), routingContext.getBody(), async -> {
-                if (async.failed()) {
-                    LOGGER.error("internal error", async.cause());
+            final Promise<ReplyResult> promise = Promise.promise();
+            final String body = routingContext.getBodyAsString();
+            LOGGER.info("schedule received {0}", body);
+
+            processSchedule(body, promise);
+
+            promise.future().setHandler(asyncResult -> {
+                if (asyncResult.failed()) {
+                    LOGGER.error("internal error", asyncResult.cause());
                     routingContext
                             .response()
                             .setStatusCode(500)
@@ -45,18 +51,30 @@ public class ScheduleEndpoint extends AbstractVerticle {
                     return;
                 }
 
-                final ProcessorResult processorResult = Json.decodeValue(async.result().body().toString(), ProcessorResult.class);
+                final ReplyResult replyResult = asyncResult.result();
                 routingContext
                         .response()
-                        .setStatusCode(getHttpStatus(processorResult))
-                        .end(processorResult.getMessage());
+                        .setStatusCode(getHttpStatus(replyResult))
+                        .end(replyResult.getMessage());
             });
         };
     }
 
-    private int getHttpStatus(final ProcessorResult processorResult) {
-        return processorResult.getStatus() == ProcessorResult.Status.OK
-                ? HttpResponseStatus.ACCEPTED.code()
+    private void processSchedule(final String body, final Promise<ReplyResult> promise) {
+        this.vertx.eventBus().<JsonObject>request(Events.SCHEDULE_RECEIVED.name(), body, async -> {
+            if (async.failed()) {
+                promise.fail(async.cause());
+                return;
+            }
+
+            final ReplyResult replyResult = async.result().body().mapTo(ReplyResult.class);
+            promise.complete(replyResult);
+        });
+    }
+
+    private int getHttpStatus(final ReplyResult replyResult) {
+        return replyResult.getStatus() == RetryResultStatus.OK
+                ? HttpResponseStatus.CREATED.code()
                 : HttpResponseStatus.BAD_REQUEST.code();
     }
 }

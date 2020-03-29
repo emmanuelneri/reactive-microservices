@@ -23,6 +23,7 @@
         <jackson.version>2.9.9</jackson.version>
         <modelmapper.version>2.3.0</modelmapper.version>
         <junit.version>4.13</junit.version>
+        <testcontainers.version>1.12.5</testcontainers.version>
     </properties>
 
     <dependencies>
@@ -62,6 +63,7 @@
         <module>commons-mapper</module>
         <module>commons-exception</module>
         <module>commons-kafka</module>
+        <module>commons-vertx</module>
     </modules>
 
     <build>
@@ -78,6 +80,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>de.qaware.maven</groupId>
+                <artifactId>go-offline-maven-plugin</artifactId>
+                <version>1.2.5</version>
             </plugin>
         </plugins>
     </build>

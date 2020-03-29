@@ -1,9 +1,8 @@
 package br.com.emmanuelneri.blueprint.schedule.connector.interfaces;
 
-import br.com.emmanuelneri.blueprint.kafka.KafkaConsumerConfiguration;
-import br.com.emmanuelneri.blueprint.kafka.KafkaProducerConfiguration;
+import br.com.emmanuelneri.blueprint.config.KafkaConsumerConfiguration;
+import br.com.emmanuelneri.blueprint.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.blueprint.mapper.JsonConfiguration;
-import br.com.emmanuelneri.blueprint.schedule.connector.service.ScheduleProcessor;
 import br.com.emmanuelneri.schedule.schema.CustomerScheduleSchema;
 import br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema;
 import io.vertx.core.Vertx;
@@ -19,7 +18,6 @@ import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,15 +35,14 @@ public class ScheduleConnectorIT {
     private static final String URI = "/schedules";
 
     private Vertx vertx;
-    private HttpServer httpServer;
 
     @Rule
     public KafkaContainer kafka = new KafkaContainer("5.2.1");
-    private KafkaConsumer<String, String> kafkaConsumer;
+    private JsonObject configuration;
 
     @Before
     public void before() {
-        final JsonObject configuration = new JsonObject()
+        configuration = new JsonObject()
                 .put("kafka.bootstrap.servers", kafka.getBootstrapServers())
                 .put("kafka.key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
                 .put("kafka.value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
@@ -54,27 +51,11 @@ public class ScheduleConnectorIT {
                 .put("kafka.offset.reset", "earliest");
 
         this.vertx = Vertx.vertx();
-
         JsonConfiguration.setUpDefault();
-        final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
-        final Router router = Router.router(vertx);
-
-        this.vertx.deployVerticle(new ScheduleProcessor());
-        this.vertx.deployVerticle(new ScheduleProducer(kafkaProducerConfiguration));
-        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
-
-        final Map<String, String> kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration).createConfig("test-schedule-consumer");
-        this.kafkaConsumer = KafkaConsumer.create(this.vertx, kafkaConsumerConfiguration);
-        this.kafkaConsumer.subscribe(ScheduleProducer.SCHEDULE_REQUEST_TOPIC);
-
-        this.httpServer = this.vertx.createHttpServer();
-        httpServer.requestHandler(router)
-                .listen(PORT);
     }
 
     @After
     public void after() {
-        this.httpServer.close();
         this.vertx.close();
     }
 
@@ -90,19 +71,44 @@ public class ScheduleConnectorIT {
         schedule.setDateTime(LocalDateTime.now().plusDays(1));
         schedule.setDescription("Complete Test");
 
-        final WebClient client = WebClient.create(vertx);
-        final Async async = context.async();
-        client.post(PORT, HOST, URI)
-                .sendJson(schedule, clientAsyncResult -> {
-                    Assert.assertFalse(clientAsyncResult.failed());
-                    final HttpResponse<Buffer> result = clientAsyncResult.result();
-                    Assert.assertEquals(202, result.statusCode());
+        final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
+        final Router router = Router.router(vertx);
 
-                    kafkaConsumer.handler(consumerRecord -> {
-                        Assert.assertNotNull(consumerRecord.key());
-                        Assert.assertEquals(Json.encode(schedule), consumerRecord.value());
-                        async.complete();
-                    });
+        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleProducer(kafkaProducerConfiguration));
+        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+
+        final Map<String, String> kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration).createConfig("test-schedule-consumer");
+        final KafkaConsumer<String, String> kafkaConsumer = KafkaConsumer.create(this.vertx, kafkaConsumerConfiguration);
+        kafkaConsumer.subscribe(ScheduleProducer.SCHEDULE_REQUEST_TOPIC);
+
+        final WebClient client = WebClient.create(this.vertx);
+        final HttpServer httpServer = this.vertx.createHttpServer();
+
+        final Async async = context.async();
+        httpServer.requestHandler(router)
+                .listen(PORT, serverAsyncResult -> {
+                    if (serverAsyncResult.failed()) {
+                        context.fail(serverAsyncResult.cause());
+                    }
+
+                    client.post(PORT, HOST, URI)
+                            .sendJson(schedule, clientAsyncResult -> {
+                                if (clientAsyncResult.failed()) {
+                                    context.fail(clientAsyncResult.cause());
+                                }
+
+                                final HttpResponse<Buffer> result = clientAsyncResult.result();
+                                context.assertEquals(201, result.statusCode());
+
+                                kafkaConsumer.handler(consumerRecord -> {
+                                    context.assertNotNull(consumerRecord.key());
+                                    context.assertEquals(Json.encode(schedule), consumerRecord.value());
+
+                                    httpServer.close();
+                                    async.complete();
+                                });
+                            });
                 });
     }
 }

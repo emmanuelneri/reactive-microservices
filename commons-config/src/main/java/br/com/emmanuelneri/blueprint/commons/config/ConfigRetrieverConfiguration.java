@@ -12,10 +12,13 @@ public class ConfigRetrieverConfiguration {
         final ConfigStoreOptions store = new ConfigStoreOptions()
                 .setType("file")
                 .setFormat("properties")
-                .setConfig(new JsonObject().put("path", String.format("%s/conf/%s.properties",
-                        applicationName, applicationName)));
+                .setConfig(new JsonObject().put("path", getFilePath(applicationName)));
 
         return ConfigRetriever.create(vertx,
                 new ConfigRetrieverOptions().addStore(store));
+    }
+
+    static String getFilePath(final String applicationName) {
+        return String.format("%s/conf/%s.properties", applicationName, applicationName);
     }
 }

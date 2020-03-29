@@ -46,9 +46,4 @@ public class Schedule {
             throw new ValidationException("customer name is required");
         }
     }
-
-    public String createTopicKey() {
-        return customer.getDocumentNumber();
-    }
-
 }
