@@ -109,7 +109,7 @@ public class ScheduleEndpointIT {
 
                                 final HttpResponse<Buffer> result = clientAsyncResult.result();
                                 context.assertEquals(400, result.statusCode());
-                                context.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
+                                context.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
                                         " at [Source: (String)\"\"{\\\"desc\\\":S}\"\"; line: 1, column: 1]", result.bodyAsString());
 
                                 httpServer.close();
