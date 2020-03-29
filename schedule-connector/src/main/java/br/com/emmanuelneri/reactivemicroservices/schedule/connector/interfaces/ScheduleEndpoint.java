@@ -26,7 +26,7 @@ public class ScheduleEndpoint extends AbstractVerticle {
 
     @Override
     public void start(final Promise<Void> startFuture) throws Exception {
-        final FailureHandler failureHandler = new FailureHandler();
+        final FailureHandler failureHandler = FailureHandler.create();
         router.route().handler(BodyHandler.create()).failureHandler(failureHandler);
         router.post(PATH).handler(scheduleReceivedRoutingHandler()).failureHandler(failureHandler);
         startFuture.complete();

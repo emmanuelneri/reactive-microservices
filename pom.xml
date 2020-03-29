@@ -64,6 +64,7 @@
         <module>commons-exception</module>
         <module>commons-kafka</module>
         <module>commons-vertx</module>
+        <module>customer-connector</module>
     </modules>
 
     <build>

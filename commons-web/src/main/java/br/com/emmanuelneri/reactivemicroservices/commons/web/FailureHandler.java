@@ -4,8 +4,11 @@ import io.vertx.core.Handler;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.ext.web.RoutingContext;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-public class FailureHandler implements Handler<RoutingContext> {
+@NoArgsConstructor(staticName = "create")
+public final class FailureHandler implements Handler<RoutingContext> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FailureHandler.class);
 
