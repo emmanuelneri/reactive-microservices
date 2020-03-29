@@ -1,7 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Events;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleEndpointSchema;
@@ -161,7 +161,7 @@ public class ScheduleEndpointIT {
     }
 
     private void mockProducerRequest() {
-        this.vertx.eventBus().localConsumer(Events.SCHEDULE_VALIDATED.name(),
+        this.vertx.eventBus().localConsumer(ScheduleEvents.SCHEDULE_VALIDATED.name(),
                 message -> message.reply(ReplyResult.OK.asJson()));
     }
 }

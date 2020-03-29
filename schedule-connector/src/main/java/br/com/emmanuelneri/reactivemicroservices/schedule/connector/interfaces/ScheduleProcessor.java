@@ -1,7 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Events;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
@@ -21,7 +21,7 @@ public class ScheduleProcessor extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         this.scheduleMapper = ScheduleMapper.create();
-        this.vertx.eventBus().consumer(Events.SCHEDULE_RECEIVED.name(), this::processSchema);
+        this.vertx.eventBus().consumer(ScheduleEvents.SCHEDULE_RECEIVED.name(), this::processSchema);
     }
 
     private void processSchema(final Message<String> message) {
@@ -63,7 +63,7 @@ public class ScheduleProcessor extends AbstractVerticle {
     }
 
     private void sendToProduce(final Schedule schedule, final Handler<AsyncResult<Void>> resultHandler) {
-        this.vertx.eventBus().request(Events.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), requestAsyncResult -> {
+        this.vertx.eventBus().request(ScheduleEvents.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), requestAsyncResult -> {
             if (requestAsyncResult.failed()) {
                 resultHandler.handle(Future.failedFuture(requestAsyncResult.cause()));
                 return;

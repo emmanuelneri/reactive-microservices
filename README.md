@@ -5,3 +5,14 @@
 
 
 building 
+
+// TODO Produzir schedule
+// TODO criar processId
+// TODO consumir schedule
+// TODO consumer idempotente
+  - Producer mensagem repetidas
+// TODO retornar processId
+// Tratamento de erro
+// TODO Contruir Customer
+// TODO Join Schedule + Customer
+// Criar Customer pelo Schedule
