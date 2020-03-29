@@ -7,6 +7,8 @@ import java.util.Map;
 
 public final class KafkaProducerConfiguration extends KafkaConfiguration {
 
+    private static final String DEFAULT_ACKS = "1";
+
     protected final String keySerializer;
     protected final String valueSerializer;
 
@@ -21,6 +23,7 @@ public final class KafkaProducerConfiguration extends KafkaConfiguration {
         config.put("bootstrap.servers", this.bootstrapServers);
         config.put("key.serializer", this.keySerializer);
         config.put("value.serializer", this.valueSerializer);
+        config.put("acks", DEFAULT_ACKS);
         return config;
     }
 }
