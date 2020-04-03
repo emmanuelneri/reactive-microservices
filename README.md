@@ -6,9 +6,8 @@
 
 building 
 
-// TODO Produzir schedule
 // TODO criar processId
-// TODO consumir schedule
+// TODO consumir scheduleSchema
 // TODO consumer idempotente
   - Producer mensagem repetidas
 // TODO retornar processId

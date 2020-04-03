@@ -2,9 +2,10 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Customer;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerScheduleSchema;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleEndpointSchema;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -44,12 +45,12 @@ public class ScheduleEndpointIT {
 
     @Test
     public void shouldProcessSchema(final TestContext context) {
-        final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
+        final Customer customerSchema = new Customer();
         customerSchema.setDocumentNumber("043030493");
         customerSchema.setName("Customer");
         customerSchema.setPhone("4499099493");
 
-        final ScheduleEndpointSchema schema = new ScheduleEndpointSchema();
+        final Schedule schema = new Schedule();
         schema.setCustomer(customerSchema);
         schema.setDateTime(LocalDateTime.now().plusDays(1));
         schema.setDescription("Test");
@@ -109,8 +110,7 @@ public class ScheduleEndpointIT {
 
                                 final HttpResponse<Buffer> result = clientAsyncResult.result();
                                 context.assertEquals(400, result.statusCode());
-                                context.assertEquals("Invalid schema: Failed to decode:Cannot construct instance of `br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleEndpointSchema` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('{\"desc\":S}')\n" +
-                                        " at [Source: (String)\"\"{\\\"desc\\\":S}\"\"; line: 1, column: 1]", result.bodyAsString());
+                                context.assertEquals("invalid schema: \"{\\\"desc\\\":S}\"", result.bodyAsString());
 
                                 httpServer.close();
                                 async.complete();
@@ -120,12 +120,12 @@ public class ScheduleEndpointIT {
 
     @Test
     public void shouldReturnBandRequestWithNoValidSchedule(final TestContext context) {
-        final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
+        final Customer customerSchema = new Customer();
         customerSchema.setDocumentNumber("043030493");
         customerSchema.setName("Customer");
         customerSchema.setPhone("4499099493");
 
-        final ScheduleEndpointSchema schema = new ScheduleEndpointSchema();
+        final Schedule schema = new Schedule();
         schema.setCustomer(customerSchema);
         schema.setDateTime(LocalDateTime.now().minusHours(1));
         schema.setDescription("Test");

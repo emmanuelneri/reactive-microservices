@@ -9,10 +9,10 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class ScheduleEndpointSchema {
+public class ScheduleSchema {
 
     private LocalDateTime dateTime;
-    private CustomerScheduleSchema customer;
+    private CustomerSchema customer;
     private String description;
 
 }

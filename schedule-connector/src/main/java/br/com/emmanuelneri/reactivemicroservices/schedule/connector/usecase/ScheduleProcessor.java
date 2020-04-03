@@ -1,8 +1,9 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.mapper.InboundScheduleMapper;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -16,11 +17,11 @@ import io.vertx.core.logging.LoggerFactory;
 public class ScheduleProcessor extends AbstractVerticle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleProcessor.class);
-    private ScheduleMapper scheduleMapper;
+    private InboundScheduleMapper scheduleMapper;
 
     @Override
     public void start() throws Exception {
-        this.scheduleMapper = ScheduleMapper.create();
+        this.scheduleMapper = InboundScheduleMapper.create();
         this.vertx.eventBus().consumer(ScheduleEvents.SCHEDULE_RECEIVED.name(), this::processSchema);
     }
 
@@ -28,7 +29,7 @@ public class ScheduleProcessor extends AbstractVerticle {
         scheduleMapper.map(message, mapperAsyncResult -> {
             if (mapperAsyncResult.failed()) {
                 LOGGER.error("conversion failed", mapperAsyncResult.cause());
-                message.reply(ReplyResult.error(String.format("Invalid schema: %s", mapperAsyncResult.cause().getMessage())).asJson());
+                message.reply(ReplyResult.error(mapperAsyncResult.cause().getMessage()).asJson());
                 return;
             }
 

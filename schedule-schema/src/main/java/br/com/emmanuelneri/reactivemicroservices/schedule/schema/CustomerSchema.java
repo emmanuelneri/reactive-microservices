@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain;
+package br.com.emmanuelneri.reactivemicroservices.schedule.schema;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +7,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class Customer {
+public class CustomerSchema {
 
     private String name;
     private String documentNumber;

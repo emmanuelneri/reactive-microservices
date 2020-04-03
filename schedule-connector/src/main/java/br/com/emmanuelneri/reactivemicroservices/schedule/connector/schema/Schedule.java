@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain;
+package br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
 import lombok.Getter;
@@ -46,4 +46,5 @@ public class Schedule {
             throw new ValidationException("customer name is required");
         }
     }
+
 }

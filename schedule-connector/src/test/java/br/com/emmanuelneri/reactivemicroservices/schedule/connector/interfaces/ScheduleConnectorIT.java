@@ -3,8 +3,9 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerScheduleSchema;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleEndpointSchema;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Customer;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -61,12 +62,12 @@ public class ScheduleConnectorIT {
 
     @Test
     public void shouldProcessSchedule(final TestContext context) {
-        final CustomerScheduleSchema customerSchema = new CustomerScheduleSchema();
+        final Customer customerSchema = new Customer();
         customerSchema.setDocumentNumber("948948393849");
         customerSchema.setName("Customer 1");
         customerSchema.setPhone("4499099493");
 
-        final ScheduleEndpointSchema schedule = new ScheduleEndpointSchema();
+        final Schedule schedule = new Schedule();
         schedule.setCustomer(customerSchema);
         schedule.setDateTime(LocalDateTime.now().plusDays(1));
         schedule.setDescription("Complete Test");

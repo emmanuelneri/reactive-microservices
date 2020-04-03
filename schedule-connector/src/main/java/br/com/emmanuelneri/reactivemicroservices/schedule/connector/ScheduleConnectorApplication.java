@@ -5,7 +5,7 @@ import br.com.emmanuelneri.reactivemicroservices.commons.config.HttpServerConfig
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces.ScheduleEndpoint;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces.ScheduleProcessor;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces.ScheduleProducer;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
