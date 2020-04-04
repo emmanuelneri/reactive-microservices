@@ -35,8 +35,8 @@ workflows:
     jobs:
       - compile
       - unit-test
-        requires:
-          - compile
+          requires:
+            - compile
       - integration-test
-        requires:
-          - unit-test
+          requires:
+            - unit-test
