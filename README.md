@@ -4,18 +4,27 @@
 ------------------------------------------------------
 
 
-building 
+### schedule-connector
+- Receving schedule request from HTTP Endpoint
+- Validating request body (synchronous)
+- Producing "ScheduleRequested" event to Kafka topic
+- If body validation or Kafka sender fails return bad request
+- If body validation and kafka sender ok return accepted http code to request
 
-// TODO criar processId
-// TODO retornar processId
-// TODO Tracing
-  - Producer mensagem repetidas
- // Deduplicate producer
- // Tolerante reader
- // tolerância a falha
-   - Retry? DLQ?
-// TODO consumir scheduleSchema
-// TODO consumer idempotente
-// TODO Contruir Customer
-// TODO Join Schedule + Customer
-// Criar Customer pelo Schedule
+TODO: 
+
+- criar processId 
+- retornar processId
+- Producer mensagem repetidas ?
+    -  Deduplicate producer
+- Tracing
+- consumir scheduleSchema
+- Tolerante reader
+- idempotente consumer
+- Tolerância a falha
+  - offset?
+  - DLQ?
+  - retry? 
+- Customer
+- Join Schedule + Customer
+- Criar Customer pelo Schedule
