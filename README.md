@@ -1,6 +1,6 @@
 #reactive-architecture
 ------------------------------------------------------
-![build](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master.svg)
+[![CircleCI](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master.svg?style=svg&circle-token=c7c1c9ef3ae5b4148c847e3e554753fd456a6987)](<LINK>)
 ------------------------------------------------------
 
 
