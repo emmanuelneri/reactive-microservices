@@ -1,17 +1,21 @@
 #reactive-architecture
 ------------------------------------------------------
-[![CircleCI](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master.svg?style=svg)](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master)
+![build](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master.svg)
 ------------------------------------------------------
 
 
 building 
 
 // TODO criar processId
+// TODO retornar processId
+// TODO Tracing
+  - Producer mensagem repetidas
+ // Deduplicate producer
+ // Tolerante reader
+ // tolerância a falha
+   - Retry? DLQ?
 // TODO consumir scheduleSchema
 // TODO consumer idempotente
-  - Producer mensagem repetidas
-// TODO retornar processId
-// Tratamento de erro
 // TODO Contruir Customer
 // TODO Join Schedule + Customer
 // Criar Customer pelo Schedule
