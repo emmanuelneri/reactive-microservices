@@ -22,6 +22,8 @@ jobs:
       - restore_cache:
           key: circleci-reactive-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B test
+    requires:
+      - compile
   integration-test:
     machine: true
     steps:
@@ -29,6 +31,8 @@ jobs:
       - restore_cache:
           key: circleci-reactive-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B verify
+    requires:
+      - unit-test
 
 workflows:
   compile_tests:
