@@ -3,6 +3,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.mapper.OutboundScheduleMapper;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.ScheduleOutbound;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
@@ -45,10 +46,13 @@ public class ScheduleProducer extends AbstractVerticle {
                     return;
                 }
 
-                final ScheduleSchema schema = schemaMapperAsyncResult.result();
+                final ScheduleOutbound scheduleOutbound = schemaMapperAsyncResult.result();
                 final KafkaProducerRecord<String, String> kafkaProducerRecord =
                         KafkaProducerRecord.create(SCHEDULE_REQUEST_TOPIC,
-                                schema.getCustomer().getDocumentNumber(), Json.encode(schema));
+                                scheduleOutbound.getKey(), Json.encode(scheduleOutbound.getSchema()));
+
+                final String requestId = scheduleOutbound.getRequestId().toString();
+                kafkaProducerRecord.addHeader(ScheduleSchema.REQUEST_ID_HEADER, requestId);
 
                 kafkaProducer.send(kafkaProducerRecord, result -> {
                     if (result.failed()) {
@@ -58,7 +62,7 @@ public class ScheduleProducer extends AbstractVerticle {
                     }
 
                     LOGGER.info("message produced {0}", kafkaProducerRecord);
-                    message.reply(ReplyResult.OK.asJson());
+                    message.reply(ReplyResult.ok(requestId).asJson());
                 });
             });
 

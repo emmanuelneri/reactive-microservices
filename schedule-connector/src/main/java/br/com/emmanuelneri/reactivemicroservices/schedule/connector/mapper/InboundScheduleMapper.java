@@ -1,7 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.mapper;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.InvalidSchemaException;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -16,8 +16,8 @@ public final class InboundScheduleMapper {
     public void map(final Message<String> message,
                     final Handler<AsyncResult<Schedule>> resultHandler) {
         try {
-            final Schedule scheduleSchema = Json.decodeValue(message.body(), Schedule.class);
-            resultHandler.handle(Future.succeededFuture(scheduleSchema));
+            final Schedule schedule = Json.decodeValue(message.body(), Schedule.class);
+            resultHandler.handle(Future.succeededFuture(schedule));
         } catch (final DecodeException dex) {
             resultHandler.handle(Future.failedFuture(new InvalidSchemaException(message.body())));
         } catch (final Exception ex) {

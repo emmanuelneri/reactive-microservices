@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
 @ToString
 public class ScheduleSchema {
 
+    public static final String REQUEST_ID_HEADER = "request-id";
+
     private LocalDateTime dateTime;
     private CustomerSchema customer;
     private String description;
-
 }

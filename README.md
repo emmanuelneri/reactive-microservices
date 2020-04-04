@@ -9,11 +9,10 @@
 - Validating request body (synchronous)
 - Producing "ScheduleRequested" event to Kafka topic
 - If body validation or Kafka sender fails return bad request
-- If body validation and kafka sender ok return accepted http code to request
+- If body validation and kafka sender ok return accepted http code and request id
 
 TODO: 
 
-- criar processId 
 - retornar processId
 - Producer mensagem repetidas ?
     -  Deduplicate producer

@@ -3,9 +3,10 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Customer;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Customer;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -18,6 +19,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.kafka.client.consumer.KafkaConsumer;
+import io.vertx.kafka.client.producer.KafkaHeader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.testcontainers.containers.KafkaContainer;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @RunWith(VertxUnitRunner.class)
@@ -101,10 +104,22 @@ public class ScheduleConnectorIT {
 
                                 final HttpResponse<Buffer> result = clientAsyncResult.result();
                                 context.assertEquals(201, result.statusCode());
+                                context.assertEquals(String.format("{\"status\":\"OK\",\"message\":\"%s\"}", schedule.getRequestId()), result.bodyAsString());
 
                                 kafkaConsumer.handler(consumerRecord -> {
                                     context.assertNotNull(consumerRecord.key());
-                                    context.assertEquals(Json.encode(schedule), consumerRecord.value());
+                                    context.assertEquals("948948393849", consumerRecord.key());
+
+                                    final ScheduleSchema consumedSchema = Json.decodeValue(consumerRecord.value(), ScheduleSchema.class);
+                                    context.assertEquals(schedule.getDescription(), consumedSchema.getDescription());
+                                    context.assertEquals(schedule.getDateTime(), consumedSchema.getDateTime());
+                                    context.assertEquals(schedule.getCustomer().getDocumentNumber(), consumedSchema.getCustomer().getDocumentNumber());
+                                    context.assertEquals(schedule.getCustomer().getName(), consumedSchema.getCustomer().getName());
+
+                                    final List<KafkaHeader> headers = consumerRecord.headers();
+                                    context.assertNotNull(headers.get(0));
+                                    context.assertEquals(ScheduleSchema.REQUEST_ID_HEADER, headers.get(0).key());
+                                    context.assertEquals(schedule.getRequestId().toString(), headers.get(0).value().toString());
 
                                     httpServer.close();
                                     async.complete();

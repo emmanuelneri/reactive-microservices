@@ -1,12 +1,14 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema;
+package br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -16,6 +18,13 @@ public class Schedule {
     private LocalDateTime dateTime;
     private Customer customer;
     private String description;
+
+    @Setter(AccessLevel.NONE)
+    private UUID requestId;
+
+    public Schedule() {
+        this.requestId = UUID.randomUUID();
+    }
 
     public void validate() {
         if (Objects.isNull(dateTime)) {

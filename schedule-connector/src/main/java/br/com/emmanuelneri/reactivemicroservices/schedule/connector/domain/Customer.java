@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema;
+package br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain;
 
 import lombok.Getter;
 import lombok.Setter;

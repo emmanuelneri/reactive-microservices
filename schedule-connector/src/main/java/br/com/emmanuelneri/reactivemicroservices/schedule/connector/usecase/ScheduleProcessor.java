@@ -2,8 +2,8 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.mapper.InboundScheduleMapper;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
@@ -48,7 +48,8 @@ public class ScheduleProcessor extends AbstractVerticle {
                         return;
                     }
 
-                    message.reply(ReplyResult.OK.asJson());
+                    final String requestId = sendAsyncResult.result();
+                    message.reply(ReplyResult.ok(requestId).asJson());
                 });
             });
         });
@@ -63,14 +64,15 @@ public class ScheduleProcessor extends AbstractVerticle {
         }
     }
 
-    private void sendToProduce(final Schedule schedule, final Handler<AsyncResult<Void>> resultHandler) {
-        this.vertx.eventBus().request(ScheduleEvents.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), requestAsyncResult -> {
-            if (requestAsyncResult.failed()) {
-                resultHandler.handle(Future.failedFuture(requestAsyncResult.cause()));
+    private void sendToProduce(final Schedule schedule, final Handler<AsyncResult<String>> resultHandler) {
+        this.vertx.eventBus().request(ScheduleEvents.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), replyAsyncResult -> {
+            if (replyAsyncResult.failed()) {
+                resultHandler.handle(Future.failedFuture(replyAsyncResult.cause()));
                 return;
             }
 
-            resultHandler.handle(Future.succeededFuture());
+            final Message<Object> replyResult = replyAsyncResult.result();
+            resultHandler.handle(Future.succeededFuture(replyResult.body().toString()));
         });
     }
 

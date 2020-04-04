@@ -19,6 +19,10 @@ public final class ReplyResult {
         return new ReplyResult(RetryResultStatus.OK, EMPTY);
     }
 
+    public static ReplyResult ok(final String message) {
+        return new ReplyResult(RetryResultStatus.OK, message);
+    }
+
     public static ReplyResult error(final String message) {
         return new ReplyResult(RetryResultStatus.ERROR, message);
     }

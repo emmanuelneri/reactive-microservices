@@ -1,8 +1,6 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Customer;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.Schedule;
 import org.junit.Test;
 
 import java.time.LocalDateTime;
