@@ -9,14 +9,10 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>schedule-connector</artifactId>
+
+    <artifactId>schedule-command</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>br.com.emmanuelneri</groupId>
             <artifactId>schedule-schema</artifactId>
@@ -25,11 +21,6 @@
         <dependency>
             <groupId>br.com.emmanuelneri</groupId>
             <artifactId>commons-config</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>br.com.emmanuelneri</groupId>
-            <artifactId>commons-web</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
         <dependency>
@@ -46,12 +37,6 @@
             <groupId>br.com.emmanuelneri</groupId>
             <artifactId>commons-kafka</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-web-client</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>

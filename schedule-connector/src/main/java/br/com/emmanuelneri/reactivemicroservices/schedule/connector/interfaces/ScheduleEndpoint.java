@@ -1,7 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.commons.web.FailureHandler;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleConnectorEvents;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.RetryResultStatus;
 import io.netty.handler.codec.http.HttpResponseStatus;
@@ -61,7 +61,7 @@ public class ScheduleEndpoint extends AbstractVerticle {
     }
 
     private void processSchedule(final String body, final Promise<ReplyResult> promise) {
-        this.vertx.eventBus().<JsonObject>request(ScheduleEvents.SCHEDULE_RECEIVED.name(), body, async -> {
+        this.vertx.eventBus().<JsonObject>request(ScheduleConnectorEvents.SCHEDULE_RECEIVED.name(), body, async -> {
             if (async.failed()) {
                 promise.fail(async.cause());
                 return;

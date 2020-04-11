@@ -58,6 +58,7 @@
     <modules>
         <module>schedule-connector</module>
         <module>schedule-schema</module>
+        <module>schedule-command</module>
         <module>commons-config</module>
         <module>commons-web</module>
         <module>commons-mapper</module>

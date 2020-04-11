@@ -1,7 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase;
 
 import br.com.emmanuelneri.reactivemicroservices.exception.ValidationException;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleConnectorEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.mapper.InboundScheduleMapper;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
@@ -22,7 +22,7 @@ public class ScheduleProcessor extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         this.scheduleMapper = InboundScheduleMapper.create();
-        this.vertx.eventBus().consumer(ScheduleEvents.SCHEDULE_RECEIVED.name(), this::processSchema);
+        this.vertx.eventBus().consumer(ScheduleConnectorEvents.SCHEDULE_RECEIVED.name(), this::processSchema);
     }
 
     private void processSchema(final Message<String> message) {
@@ -65,7 +65,7 @@ public class ScheduleProcessor extends AbstractVerticle {
     }
 
     private void sendToProduce(final Schedule schedule, final Handler<AsyncResult<String>> resultHandler) {
-        this.vertx.eventBus().request(ScheduleEvents.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), replyAsyncResult -> {
+        this.vertx.eventBus().request(ScheduleConnectorEvents.SCHEDULE_VALIDATED.name(), JsonObject.mapFrom(schedule), replyAsyncResult -> {
             if (replyAsyncResult.failed()) {
                 resultHandler.handle(Future.failedFuture(replyAsyncResult.cause()));
                 return;

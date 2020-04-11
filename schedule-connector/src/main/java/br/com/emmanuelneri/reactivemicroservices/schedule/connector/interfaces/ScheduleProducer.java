@@ -1,7 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleEvents;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleConnectorEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.mapper.OutboundScheduleMapper;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.schema.ScheduleOutbound;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
@@ -34,7 +34,7 @@ public class ScheduleProducer extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         final KafkaProducer<String, String> kafkaProducer = KafkaProducer.create(this.vertx, this.kafkaProducerConfiguration);
-        this.vertx.eventBus().<JsonObject>consumer(ScheduleEvents.SCHEDULE_VALIDATED.name(), message -> produce(kafkaProducer, message));
+        this.vertx.eventBus().<JsonObject>consumer(ScheduleConnectorEvents.SCHEDULE_VALIDATED.name(), message -> produce(kafkaProducer, message));
     }
 
     private void produce(final KafkaProducer<String, String> kafkaProducer, final Message<JsonObject> message) {
