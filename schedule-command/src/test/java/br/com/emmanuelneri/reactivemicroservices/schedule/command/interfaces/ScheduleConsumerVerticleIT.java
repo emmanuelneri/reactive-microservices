@@ -5,7 +5,6 @@ import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfigurati
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.Schema;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;

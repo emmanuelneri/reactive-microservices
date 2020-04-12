@@ -4,7 +4,7 @@ import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.mapper.MapperBuilder;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.Schema;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.DecodeException;
@@ -45,7 +45,7 @@ final class ScheduleMessageProcessor {
     }
 
     private Schedule map(final ConsumerRecord<String, String> record) {
-        final Schema schema = Json.decodeValue(record.value(), Schema.class);
+        final ScheduleSchema schema = Json.decodeValue(record.value(), ScheduleSchema.class);
 
         final Schedule schedule = new Schedule();
         MapperBuilder.INSTANCE.map(schema, schedule);
