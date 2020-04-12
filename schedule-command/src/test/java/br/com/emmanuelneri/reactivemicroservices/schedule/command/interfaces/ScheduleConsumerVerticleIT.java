@@ -5,7 +5,7 @@ import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfigurati
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.Schema;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -59,21 +59,22 @@ public class ScheduleConsumerVerticleIT {
         customerSchema.setName("Customer 1");
         customerSchema.setPhone("4499099493");
 
-        final ScheduleSchema schedule = new ScheduleSchema();
-        schedule.setCustomer(customerSchema);
-        schedule.setDateTime(LocalDateTime.now().plusDays(1));
-        schedule.setDescription("Complete Test");
+        final Schema schema = new Schema();
+        schema.setCustomer(customerSchema);
+        schema.setDateTime(LocalDateTime.now().plusDays(1));
+        schema.setDescription("Complete Test");
 
-        produceMessage(customerSchema.getDocumentNumber(), Json.encode(schedule));
+        produceMessage(customerSchema.getDocumentNumber(), Json.encode(schema));
 
         final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
 
         final Async async = context.async();
         this.vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
         vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
-            final ScheduleSchema schema = message.body().mapTo(ScheduleSchema.class);
-            Assert.assertNotNull(schema);
-            Assert.assertEquals("Complete Test", schema.getDescription());
+            final Schema schedule = message.body().mapTo(Schema.class);
+            Assert.assertNotNull(schedule);
+            Assert.assertEquals("Complete Test", schedule.getDescription());
+            message.reply("ok");
             async.complete();
         });
     }
