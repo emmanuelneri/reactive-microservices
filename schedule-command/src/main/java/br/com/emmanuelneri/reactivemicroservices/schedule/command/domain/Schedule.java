@@ -12,7 +12,10 @@ import java.time.LocalDateTime;
 public class Schedule {
 
     private LocalDateTime dateTime;
-    private Customer customer;
     private String description;
 
+    private String customer;
+    private String documentNumber;
+    private String phone;
+    private String email;
 }

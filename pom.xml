@@ -65,6 +65,7 @@
         <module>commons-exception</module>
         <module>commons-kafka</module>
         <module>commons-vertx</module>
+        <module>commons-cassandra</module>
     </modules>
 
     <build>
