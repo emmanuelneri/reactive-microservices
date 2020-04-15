@@ -22,6 +22,9 @@ reactive-architecture
   - In case of invalid schema, offset will be committed and message will be sent to a DLQ
   - In case of unexpected error in any message, bateche message will not be commit 
 - Consume only filled fields 
+- Validate Schedule rules
+ - If invalid business schedule, offset will be committed and message will be sent to a DLQ
+- Persist schedule in Cassandra
 
 
 TODO: 
@@ -31,10 +34,6 @@ TODO:
 - idempotente consumer
     - https://dzone.com/articles/kafka-clients-at-most-once-at-least-once-exactly-o
     - https://camel.apache.org/components/latest/eips/idempotentConsumer-eip.html
-- Tolerância a falha
-  - offset?
-  - DLQ?
-  - retry? 
 - Customer
 - Join Schedule + Customer
 - Criar Customer pelo Schedule
@@ -48,3 +47,4 @@ TODO:
 - Escalar consumers
 - Tracing
 - Fallback (connector?)
+- Tolerância a falha (Review)

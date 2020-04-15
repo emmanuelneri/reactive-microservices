@@ -25,6 +25,10 @@ public final class InvalidMessage {
         return new InvalidMessage(consumerRecord, InvalidMessageReason.VALUE_DECODE_FAILURE, cause);
     }
 
+    public static InvalidMessage invalidBusinessValidation(final ConsumerRecord<?, ?> consumerRecord, final String cause) {
+        return new InvalidMessage(consumerRecord, InvalidMessageReason.BUSINESS_VALIDATION_FAILURE, cause);
+    }
+
     private InvalidMessage(final ConsumerRecord<?, ?> consumerRecord, final InvalidMessageReason reason, String cause) {
         this.topic = consumerRecord.topic();
         this.partition = consumerRecord.partition();
