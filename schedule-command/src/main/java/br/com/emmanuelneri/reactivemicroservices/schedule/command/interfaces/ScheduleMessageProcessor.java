@@ -1,14 +1,12 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
-import br.com.emmanuelneri.reactivemicroservices.mapper.MapperBuilder;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.exceptions.ValidationException;
+import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.DecodeException;
-import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
@@ -23,32 +21,39 @@ final class ScheduleMessageProcessor {
     private final Vertx vertx;
 
     void process(final ConsumerRecord<String, String> record, final Promise<Void> promise) {
-        try {
-            final Schedule schedule = map(record);
-            vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(schedule), resultHandler -> {
-                if (resultHandler.failed()) {
-                    promise.fail(resultHandler.cause());
+        ScheduleMapper.INSTANCE.map(record, mapResultHandler -> {
+            if (mapResultHandler.failed()) {
+                failedHandler(record, promise, mapResultHandler);
+                return;
+            }
+
+            final Schedule schedule = mapResultHandler.result();
+            schedule.validate(validateResultHandler -> {
+                if (validateResultHandler.failed()) {
+                    promise.fail(validateResultHandler.cause());
                     return;
                 }
 
-                promise.complete();
-                LOGGER.info("message consumed {0}", record);
+                vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(schedule), resultHandler -> {
+                    if (resultHandler.failed()) {
+                        failedHandler(record, promise, resultHandler);
+                        return;
+                    }
+
+                    promise.complete();
+                    LOGGER.info("message consumed {0}", record);
+                });
             });
-        } catch (final DecodeException | IllegalArgumentException ex) {
-            final JsonObject invalidMessage = JsonObject.mapFrom(InvalidMessage.invalidDecodeValue(record, ex.getMessage()));
-            vertx.eventBus().send(ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName(), invalidMessage);
-            LOGGER.error("failed to decode message: {0}", invalidMessage);
-            promise.complete();
-        } catch (final Exception ex) {
-            promise.fail(ex);
-        }
+        });
     }
 
-    private Schedule map(final ConsumerRecord<String, String> record) {
-        final ScheduleSchema schema = Json.decodeValue(record.value(), ScheduleSchema.class);
-
-        final Schedule schedule = new Schedule();
-        MapperBuilder.INSTANCE.map(schema, schedule);
-        return schedule;
+    private void failedHandler(final ConsumerRecord<String, String> record, final Promise<Void> promise, final AsyncResult<?> resultHandler) {
+        if (resultHandler.cause() instanceof ValidationException) {
+            final InvalidMessage invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
+            vertx.eventBus().publish(ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(invalidMessage));
+            promise.complete();
+        } else {
+            promise.fail(resultHandler.cause());
+        }
     }
 }

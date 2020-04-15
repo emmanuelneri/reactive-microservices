@@ -4,6 +4,7 @@ import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfigurati
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import io.vertx.core.Vertx;
@@ -71,7 +72,7 @@ public class ScheduleConsumerVerticleIT {
         final Async async = context.async();
         this.vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
         vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
-            final ScheduleSchema schedule = message.body().mapTo(ScheduleSchema.class);
+            final Schedule schedule = message.body().mapTo(Schedule.class);
             Assert.assertNotNull(schedule);
             Assert.assertEquals("Complete Test", schedule.getDescription());
             message.reply("ok");
