@@ -51,15 +51,22 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
                                     schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
 
                     client.execute(boundStatement, executeResultHandler -> {
+                        System.out.println("----- executed ---------------");
+
+
                         if (prepareResultHandler.failed()) {
                             message.fail(CONNECTION_ERROR.getCode(), executeResultHandler.cause().getMessage());
                             return;
                         }
 
+                        System.out.println("----- REPLY ---------------");
+
                         message.reply("ok");
                     });
 
                 } catch (Exception ex) {
+                    System.out.println("----- ERRRo ---------------");
+
                     message.fail(CONNECTION_ERROR.getCode(), ex.getMessage());
                 }
             });
