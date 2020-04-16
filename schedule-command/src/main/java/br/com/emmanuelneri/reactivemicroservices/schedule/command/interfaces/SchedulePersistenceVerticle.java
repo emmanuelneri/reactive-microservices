@@ -29,27 +29,39 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
 
     private Handler<Message<JsonObject>> persist(final CassandraClient client) {
         return message -> {
+            System.out.println("----- INIT ---------------");
             final Schedule schedule = message.body().mapTo(Schedule.class);
+            System.out.println("----- Convert ---------------");
+
             client.prepare("INSERT INTO schedule (data_time, description, document_number, customer, phone, email) VALUES (?,?,?,?,?,?)", prepareResultHandler -> {
+
+                System.out.println("----- PREPARED ---------------");
+
+
                 if (prepareResultHandler.failed()) {
                     message.fail(CONNECTION_ERROR.getCode(), prepareResultHandler.cause().getMessage());
                     return;
                 }
 
-                final PreparedStatement preparedStatement = prepareResultHandler.result();
-                preparedStatement.getCodecRegistry().register(LocalDateTimeCodec.instance);
-                final BoundStatement boundStatement = preparedStatement
-                        .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
-                                schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
+                try {
+                    final PreparedStatement preparedStatement = prepareResultHandler.result();
+                    preparedStatement.getCodecRegistry().register(LocalDateTimeCodec.instance);
+                    final BoundStatement boundStatement = preparedStatement
+                            .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
+                                    schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
 
-                client.execute(boundStatement, executeResultHandler -> {
-                    if (prepareResultHandler.failed()) {
-                        message.fail(CONNECTION_ERROR.getCode(), executeResultHandler.cause().getMessage());
-                        return;
-                    }
+                    client.execute(boundStatement, executeResultHandler -> {
+                        if (prepareResultHandler.failed()) {
+                            message.fail(CONNECTION_ERROR.getCode(), executeResultHandler.cause().getMessage());
+                            return;
+                        }
 
-                    message.reply("ok");
-                });
+                        message.reply("ok");
+                    });
+
+                } catch (Exception ex) {
+                    message.fail(CONNECTION_ERROR.getCode(), ex.getMessage());
+                }
             });
         };
     }
