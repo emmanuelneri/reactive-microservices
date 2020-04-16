@@ -14,6 +14,8 @@ import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
 
+import static br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.MessageError.CONNECTION_ERROR;
+
 @AllArgsConstructor
 public class SchedulePersistenceVerticle extends AbstractVerticle {
 
@@ -30,7 +32,7 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
             final Schedule schedule = message.body().mapTo(Schedule.class);
             client.prepare("INSERT INTO schedule (data_time, description, document_number, customer, phone, email) VALUES (?,?,?,?,?,?)", prepareResultHandler -> {
                 if (prepareResultHandler.failed()) {
-                    message.fail(999, prepareResultHandler.cause().getMessage());
+                    message.fail(CONNECTION_ERROR.getCode(), prepareResultHandler.cause().getMessage());
                     return;
                 }
 
@@ -42,7 +44,7 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
 
                 client.execute(boundStatement, executeResultHandler -> {
                     if (prepareResultHandler.failed()) {
-                        message.fail(999, executeResultHandler.cause().getMessage());
+                        message.fail(CONNECTION_ERROR.getCode(), executeResultHandler.cause().getMessage());
                         return;
                     }
 

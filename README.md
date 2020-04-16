@@ -44,7 +44,9 @@ TODO:
     - https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/
     - Idempotent Producer
     - Deduplicate producer
+- Fallback 
+  - Connector : Kafka fora
+  - Command : Cassandra fora
+- Tolerância a falha (Review)
 - Escalar consumers
 - Tracing
-- Fallback (connector?)
-- Tolerância a falha (Review)

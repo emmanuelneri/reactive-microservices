@@ -23,7 +23,7 @@
         <jackson.version>2.9.9</jackson.version>
         <modelmapper.version>2.3.0</modelmapper.version>
         <junit.version>4.13</junit.version>
-        <testcontainers.version>1.12.5</testcontainers.version>
+        <testcontainers.version>1.14.0</testcontainers.version>
     </properties>
 
     <dependencies>

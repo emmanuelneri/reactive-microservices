@@ -30,7 +30,7 @@ import java.util.List;
 public class SchedulePersistenceVerticleIT {
 
     @Rule
-    public CassandraContainer cassandra = new CassandraContainer();
+    public CassandraContainer cassandra = new CassandraContainer("cassandra:3.11");
 
     private JsonObject configuration;
     private Vertx vertx;
@@ -39,18 +39,20 @@ public class SchedulePersistenceVerticleIT {
     public void before() {
         final Cluster cluster = cassandra.getCluster();
 
-        final String address = cluster.getMetadata().getAllHosts().stream().findAny().get().toString();
-        final String contactPoint = address.substring(0, address.indexOf("/"));
-        final String port = address.substring(address.lastIndexOf(":") + 1, address.length());
-
-        configuration = new JsonObject()
-                .put("cassandra.contactPoint", contactPoint)
-                .put("cassandra.port", Integer.valueOf(port))
-                .put("cassandra.keyspace", "test");
         this.vertx = Vertx.vertx();
         JsonConfiguration.setUpDefault();
 
         try (final Session session = cluster.connect()) {
+            final String address = session.getCluster().getMetadata().getAllHosts().stream().findAny().get().toString();
+            final String contactPoint = address.substring(address.indexOf("/") + 1, address.indexOf(":"));
+            final String port = address.substring(address.lastIndexOf(":") + 1);
+
+            configuration = new JsonObject()
+                    .put("cassandra.contactPoint", contactPoint)
+                    .put("cassandra.port", Integer.valueOf(port))
+                    .put("cassandra.keyspace", "test");
+
+
             session.execute("CREATE KEYSPACE IF NOT EXISTS test WITH replication = " +
                     "{'class':'SimpleStrategy','replication_factor':'1'};");
 
