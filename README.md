@@ -29,6 +29,7 @@ reactive-architecture
 
 TODO: 
 
+
 - retornar processId
 - Tolerante reader
 - idempotente consumer
