@@ -19,6 +19,7 @@ import io.vertx.core.logging.LoggerFactory;
 import lombok.AllArgsConstructor;
 
 import static br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.MessageError.CONNECTION_ERROR;
+import static br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.MessageError.EXECUTION_ERROR;
 
 @AllArgsConstructor
 public class SchedulePersistenceVerticle extends AbstractVerticle {
@@ -44,13 +45,18 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
                     return;
                 }
 
-                final PreparedStatement preparedStatement = prepareResultHandler.result();
-                preparedStatement.getCodecRegistry().register(LocalDateTimeCodec.instance);
-                final BoundStatement boundStatement = preparedStatement
-                        .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
-                                schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
+                try {
+                    final PreparedStatement preparedStatement = prepareResultHandler.result();
+                    preparedStatement.getCodecRegistry().register(LocalDateTimeCodec.instance);
+                    final BoundStatement boundStatement = preparedStatement
+                            .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
+                                    schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
 
-                client.execute(boundStatement, handlerExecute(message));
+                    client.execute(boundStatement, handlerExecute(message));
+                } catch (final Exception ex) {
+                    LOGGER.error("boundStatement error", ex);
+                    message.fail(EXECUTION_ERROR.getCode(), ex.getMessage());
+                }
             });
         };
     }
