@@ -72,6 +72,7 @@ public class SchedulePersistenceVerticleIT {
 
     @Test
     public void shouldPersistSchedule(final TestContext context) {
+        final Async async = context.async();
         final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(this.configuration);
         this.vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration));
 
@@ -83,7 +84,6 @@ public class SchedulePersistenceVerticleIT {
         schedule.setPhone("4499099493");
         schedule.setEmail("test@gmail.com");
 
-        final Async async = context.async();
         this.vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(schedule), requestResultHandler -> {
             if (requestResultHandler.failed()) {
                 context.fail(requestResultHandler.cause());
