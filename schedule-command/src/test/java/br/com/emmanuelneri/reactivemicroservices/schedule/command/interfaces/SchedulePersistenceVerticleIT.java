@@ -133,7 +133,6 @@ public class SchedulePersistenceVerticleIT {
     }
 
     @Test
-    @Ignore
     public void shouldReplyFailWithDBIsOut(final TestContext context) {
         cassandra.stop();
 
