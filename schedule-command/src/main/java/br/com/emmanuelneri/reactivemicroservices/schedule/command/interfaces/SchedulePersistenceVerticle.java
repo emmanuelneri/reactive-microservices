@@ -12,6 +12,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -30,9 +31,15 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
     private final CassandraConfiguration cassandraConfiguration;
 
     @Override
-    public void start(final Future<Void> startFuture) {
-        final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
-        this.vertx.eventBus().consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), persist(client));
+    public void start(final Promise<Void> startPromise) {
+        try {
+            final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
+            this.vertx.eventBus().consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), persist(client));
+            startPromise.complete();
+            LOGGER.info("SchedulePersistenceVerticle started");
+        } catch (final Exception ex) {
+            startPromise.fail(ex);
+        }
     }
 
     private Handler<Message<JsonObject>> persist(final CassandraClient client) {

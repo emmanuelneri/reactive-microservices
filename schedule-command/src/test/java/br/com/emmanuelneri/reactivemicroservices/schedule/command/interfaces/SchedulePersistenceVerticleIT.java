@@ -74,7 +74,11 @@ public class SchedulePersistenceVerticleIT {
     public void shouldPersistSchedule(final TestContext context) {
         final Async async = context.async();
         final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(this.configuration);
-        this.vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration));
+        this.vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration), deployHandler -> {
+            if (deployHandler.failed()) {
+                context.fail(deployHandler.cause());
+            }
+        });
 
         final Schedule schedule = new Schedule();
         schedule.setDateTime(LocalDateTime.now().plusDays(1));
