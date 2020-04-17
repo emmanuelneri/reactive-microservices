@@ -37,7 +37,6 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
 
     private Handler<Message<JsonObject>> persist(final CassandraClient client) {
         return message -> {
-            final Schedule schedule = message.body().mapTo(Schedule.class);
             client.prepare("INSERT INTO schedule (data_time, description, document_number, customer, phone, email) VALUES (?,?,?,?,?,?)", prepareResultHandler -> {
                 if (prepareResultHandler.failed()) {
                     LOGGER.error("prepareStatement error", prepareResultHandler.cause());
@@ -46,8 +45,11 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
                 }
 
                 try {
+                    final Schedule schedule = message.body().mapTo(Schedule.class);
+
                     final PreparedStatement preparedStatement = prepareResultHandler.result();
                     preparedStatement.getCodecRegistry().register(LocalDateTimeCodec.instance);
+
                     final BoundStatement boundStatement = preparedStatement
                             .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
                                     schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
