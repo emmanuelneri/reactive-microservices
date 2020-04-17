@@ -27,6 +27,8 @@ import org.testcontainers.containers.CassandraContainer;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.SchedulePersistenceVerticle.SCHEDULE_RECEIVED_ADDRESS;
+
 @RunWith(VertxUnitRunner.class)
 public class SchedulePersistenceVerticleIT {
 
@@ -88,7 +90,8 @@ public class SchedulePersistenceVerticleIT {
         schedule.setPhone("4499099493");
         schedule.setEmail("test@gmail.com");
 
-        this.vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(schedule), requestResultHandler -> {
+        this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(schedule), requestResultHandler -> {
+            System.out.println("requestResultHandler"); // TODO
             if (requestResultHandler.failed()) {
                 context.fail(requestResultHandler.cause());
                 return;
@@ -98,30 +101,51 @@ public class SchedulePersistenceVerticleIT {
             context.assertNotNull(body);
             context.assertEquals("ok", body.toString());
 
-            final CassandraClient client = CassandraClient.create(vertx, cassandraConfiguration.getOptions());
+            System.out.println("body"); // TODO
+
+
+            final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
             client.execute("SELECT * FROM schedule", queryResultHandler -> {
+                System.out.println("execute"); // TODO
+
                 if (queryResultHandler.failed()) {
                     context.fail(queryResultHandler.cause());
                     return;
                 }
 
+                System.out.println("result"); // TODO
+
                 final ResultSet resultSet = queryResultHandler.result();
                 resultSet.all(resultSetHandler -> {
+                    System.out.println("resultSetHandler"); // TODO
+
+
                     if (resultSetHandler.failed()) {
                         context.fail(resultSetHandler.cause());
                         return;
                     }
 
+                    System.out.println("rows"); // TODO
+
+
+
                     final List<Row> rows = resultSetHandler.result();
                     context.assertEquals(1, rows.size());
 
                     final Row row = rows.get(0);
+
+
+                    System.out.println("row"); // TODO
+
+
                     context.assertEquals(schedule.getDescription(), row.get("description", TypeCodec.varchar()));
                     context.assertEquals(schedule.getDateTime(), row.get("data_time", LocalDateTimeCodec.instance));
                     context.assertEquals(schedule.getCustomer(), row.get("customer", TypeCodec.varchar()));
                     context.assertEquals(schedule.getDocumentNumber(), row.get("document_number", TypeCodec.varchar()));
                     context.assertEquals(schedule.getPhone(), row.get("phone", TypeCodec.varchar()));
                     context.assertEquals(schedule.getEmail(), row.get("email", TypeCodec.varchar()));
+                    System.out.println("complete"); // TODO
+
                     async.complete();
                 });
             });
