@@ -74,13 +74,7 @@ public class SchedulePersistenceVerticleIT {
 
     @Test
     public void shouldPersistSchedule(final TestContext context) {
-        final Async async = context.async();
         final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(this.configuration);
-        this.vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration), deployHandler -> {
-            if (deployHandler.failed()) {
-                context.fail(deployHandler.cause());
-            }
-        });
 
         final Schedule schedule = new Schedule();
         schedule.setDateTime(LocalDateTime.now().plusDays(1));
@@ -90,63 +84,49 @@ public class SchedulePersistenceVerticleIT {
         schedule.setPhone("4499099493");
         schedule.setEmail("test@gmail.com");
 
-        this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(schedule), requestResultHandler -> {
-            System.out.println("requestResultHandler"); // TODO
-            if (requestResultHandler.failed()) {
-                context.fail(requestResultHandler.cause());
-                return;
+
+        final Async async = context.async();
+        this.vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration), deployHandler -> {
+            if (deployHandler.failed()) {
+                context.fail(deployHandler.cause());
             }
 
-            final Object body = requestResultHandler.result().body();
-            context.assertNotNull(body);
-            context.assertEquals("ok", body.toString());
-
-            System.out.println("body"); // TODO
-
-
-            final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
-            client.execute("SELECT * FROM schedule", queryResultHandler -> {
-                System.out.println("execute"); // TODO
-
-                if (queryResultHandler.failed()) {
-                    context.fail(queryResultHandler.cause());
+            this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(schedule), requestResultHandler -> {
+                if (requestResultHandler.failed()) {
+                    context.fail(requestResultHandler.cause());
                     return;
                 }
 
-                System.out.println("result"); // TODO
+                final Object body = requestResultHandler.result().body();
+                context.assertNotNull(body);
+                context.assertEquals("ok", body.toString());
 
-                final ResultSet resultSet = queryResultHandler.result();
-                resultSet.all(resultSetHandler -> {
-                    System.out.println("resultSetHandler"); // TODO
-
-
-                    if (resultSetHandler.failed()) {
-                        context.fail(resultSetHandler.cause());
+                final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
+                client.execute("SELECT * FROM schedule", queryResultHandler -> {
+                    if (queryResultHandler.failed()) {
+                        context.fail(queryResultHandler.cause());
                         return;
                     }
 
-                    System.out.println("rows"); // TODO
+                    final ResultSet resultSet = queryResultHandler.result();
+                    resultSet.all(resultSetHandler -> {
+                        if (resultSetHandler.failed()) {
+                            context.fail(resultSetHandler.cause());
+                            return;
+                        }
 
+                        final List<Row> rows = resultSetHandler.result();
+                        context.assertEquals(1, rows.size());
 
-
-                    final List<Row> rows = resultSetHandler.result();
-                    context.assertEquals(1, rows.size());
-
-                    final Row row = rows.get(0);
-
-
-                    System.out.println("row"); // TODO
-
-
-                    context.assertEquals(schedule.getDescription(), row.get("description", TypeCodec.varchar()));
-                    context.assertEquals(schedule.getDateTime(), row.get("data_time", LocalDateTimeCodec.instance));
-                    context.assertEquals(schedule.getCustomer(), row.get("customer", TypeCodec.varchar()));
-                    context.assertEquals(schedule.getDocumentNumber(), row.get("document_number", TypeCodec.varchar()));
-                    context.assertEquals(schedule.getPhone(), row.get("phone", TypeCodec.varchar()));
-                    context.assertEquals(schedule.getEmail(), row.get("email", TypeCodec.varchar()));
-                    System.out.println("complete"); // TODO
-
-                    async.complete();
+                        final Row row = rows.get(0);
+                        context.assertEquals(schedule.getDescription(), row.get("description", TypeCodec.varchar()));
+                        context.assertEquals(schedule.getDateTime(), row.get("data_time", LocalDateTimeCodec.instance));
+                        context.assertEquals(schedule.getCustomer(), row.get("customer", TypeCodec.varchar()));
+                        context.assertEquals(schedule.getDocumentNumber(), row.get("document_number", TypeCodec.varchar()));
+                        context.assertEquals(schedule.getPhone(), row.get("phone", TypeCodec.varchar()));
+                        context.assertEquals(schedule.getEmail(), row.get("email", TypeCodec.varchar()));
+                        async.complete();
+                    });
                 });
             });
         });

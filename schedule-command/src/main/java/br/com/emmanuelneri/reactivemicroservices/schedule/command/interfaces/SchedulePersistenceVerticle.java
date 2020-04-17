@@ -43,7 +43,6 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
                         .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
                                 schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());
 
-                System.out.println("Execute"); // TODO
                 client.execute(boundStatement, executeResultHandler -> {
                     if (executeResultHandler.failed()) {
                         LOGGER.error("execute error", executeResultHandler.cause());
@@ -51,7 +50,6 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
                         return;
                     }
 
-                    System.out.println("REPLYYYYY"); // TODO
                     message.reply(REPLY_OK);
                 });
             });
