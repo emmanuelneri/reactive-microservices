@@ -42,7 +42,7 @@ public class ScheduleConsumerVerticleIT {
                 .put("kafka.key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
                 .put("kafka.value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer")
                 .put("kafka.offset.reset", "earliest")
-                .put("kafka.enable.auto.commit", "false");
+                .put("kafka.enable.auto.commit", false);
 
         this.vertx = Vertx.vertx();
         JsonConfiguration.setUpDefault();
