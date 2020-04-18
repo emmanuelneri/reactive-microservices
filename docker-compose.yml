@@ -27,3 +27,5 @@ services:
     container_name: cassandra
     ports:
       - "9042:9042"
+    volumes:
+      - ./schedule-command/conf/schedule.cql:/tmp/schedule.cql

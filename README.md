@@ -3,6 +3,7 @@ reactive-architecture
 [![CircleCI](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master.svg?style=svg&circle-token=c7c1c9ef3ae5b4148c847e3e554753fd456a6987)](<LINK>)
 ------------------------------------------------------
 
+## Applications
 
 ### schedule-connector
 - Receving schedule request from HTTP Endpoint
@@ -20,11 +21,16 @@ reactive-architecture
   - Kafka Consumer with auto commit = false
   - Processing batch messages and commit only at the end
   - In case of invalid schema, offset will be committed and message will be sent to a DLQ
-  - In case of unexpected error in any message, bateche message will not be commit 
+  - In case of unexpected error in any message, batch message will not be commit 
 - Consume only filled fields 
 - Validate Schedule rules
  - If invalid business schedule, offset will be committed and message will be sent to a DLQ
 - Persist schedule in Cassandra
+
+## Run
+
+1. Start infrastructure (Kafka, Cassandra), execute ```docker-compose up```
+2. Create datatables ```docker exec -it cassandra bash -c "cqlsh -f /tmp/schedule.cql"```
 
 
 TODO: 
