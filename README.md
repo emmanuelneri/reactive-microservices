@@ -22,10 +22,13 @@ reactive-architecture
   - Processing batch messages and commit only at the end
   - In case of invalid schema, offset will be committed and message will be sent to a DLQ
   - In case of unexpected error in any message, batch message will not be commit 
+  - In case of unexpected error in last message, the previous messages could be processed
 - Consume only filled fields 
 - Validate Schedule rules
  - If invalid business schedule, offset will be committed and message will be sent to a DLQ
 - Persist schedule in Cassandra
+  - Schedule and Customer persist in a single table
+  - Table key is composed by dateTime, description and customer Document number 
 
 ## Run
 

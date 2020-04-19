@@ -17,6 +17,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 final class ScheduleMessageProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleConsumerVerticle.class);
+    static final String SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RECEIVED.getName();
+    static final String INVALID_SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName();
 
     private final Vertx vertx;
 
@@ -30,11 +32,11 @@ final class ScheduleMessageProcessor {
             final Schedule schedule = mapResultHandler.result();
             schedule.validate(validateResultHandler -> {
                 if (validateResultHandler.failed()) {
-                    promise.fail(validateResultHandler.cause());
+                    failedHandler(record, promise, validateResultHandler);
                     return;
                 }
 
-                vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(schedule), resultHandler -> {
+                this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(schedule), resultHandler -> {
                     if (resultHandler.failed()) {
                         failedHandler(record, promise, resultHandler);
                         return;
@@ -50,7 +52,7 @@ final class ScheduleMessageProcessor {
     private void failedHandler(final ConsumerRecord<String, String> record, final Promise<Void> promise, final AsyncResult<?> resultHandler) {
         if (resultHandler.cause() instanceof ValidationException) {
             final InvalidMessage invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
-            vertx.eventBus().publish(ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(invalidMessage));
+            this.vertx.eventBus().send(INVALID_SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(invalidMessage));
             promise.complete();
         } else {
             promise.fail(resultHandler.cause());

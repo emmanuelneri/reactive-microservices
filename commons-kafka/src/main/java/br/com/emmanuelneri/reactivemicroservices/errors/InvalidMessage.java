@@ -1,25 +1,30 @@
 package br.com.emmanuelneri.reactivemicroservices.errors;
 
 import io.vertx.core.json.Json;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 import java.util.Objects;
 
 @Getter
+@Setter
 @ToString
+@NoArgsConstructor
 public final class InvalidMessage {
 
-    private final String topic;
-    private final int partition;
-    private final long offset;
-    private final long timestamp;
-    private final String headers;
-    private final String key;
-    private final String value;
-    private final InvalidMessageReason reason;
-    private final String cause;
+    private String topic;
+    private int partition;
+    private long offset;
+    private long timestamp;
+    private String headers;
+    private String key;
+    private String value;
+    private InvalidMessageReason reason;
+    private String cause;
 
     public static InvalidMessage invalidDecodeValue(final ConsumerRecord<?, ?> consumerRecord, final String cause) {
         return new InvalidMessage(consumerRecord, InvalidMessageReason.VALUE_DECODE_FAILURE, cause);
