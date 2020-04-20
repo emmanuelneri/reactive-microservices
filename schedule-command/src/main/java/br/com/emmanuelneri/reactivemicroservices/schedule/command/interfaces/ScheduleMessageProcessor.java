@@ -19,6 +19,7 @@ final class ScheduleMessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleConsumerVerticle.class);
     static final String SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RECEIVED.getName();
     static final String INVALID_SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName();
+    static final String SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RETURN_REQUEST_PROCESSED.getName();
 
     private final Vertx vertx;
 
@@ -42,6 +43,9 @@ final class ScheduleMessageProcessor {
                         return;
                     }
 
+                    ScheduleRequestResultBuilder.INSTANCE.success(record,
+                            requestResult -> this.vertx.eventBus().send(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
+
                     promise.complete();
                     LOGGER.info("message consumed {0}", record);
                 });
@@ -50,12 +54,18 @@ final class ScheduleMessageProcessor {
     }
 
     private void failedHandler(final ConsumerRecord<String, String> record, final Promise<Void> promise, final AsyncResult<?> resultHandler) {
+        InvalidMessage invalidMessage;
+
         if (resultHandler.cause() instanceof ValidationException) {
-            final InvalidMessage invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
+            invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
             this.vertx.eventBus().send(INVALID_SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(invalidMessage));
             promise.complete();
         } else {
+            invalidMessage = InvalidMessage.unexpectedFailure(record, resultHandler.cause());
             promise.fail(resultHandler.cause());
         }
+
+        ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage,
+                requestResult -> this.vertx.eventBus().send(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
     }
 }

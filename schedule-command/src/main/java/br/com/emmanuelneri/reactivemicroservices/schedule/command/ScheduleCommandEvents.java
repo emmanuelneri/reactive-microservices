@@ -6,6 +6,7 @@ public enum ScheduleCommandEvents implements EventBusName {
 
     SCHEDULE_RECEIVED,
     INVALID_SCHEDULE_RECEIVED,
+    SCHEDULE_RETURN_REQUEST_PROCESSED
     ;
 
     @Override

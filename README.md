@@ -39,7 +39,6 @@ reactive-architecture
 TODO: 
 
 
-- retornar processId
 - Tolerante reader
 - idempotente consumer
     - https://dzone.com/articles/kafka-clients-at-most-once-at-least-once-exactly-o
