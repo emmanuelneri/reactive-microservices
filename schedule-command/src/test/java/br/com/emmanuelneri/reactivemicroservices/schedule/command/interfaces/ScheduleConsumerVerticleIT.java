@@ -82,24 +82,20 @@ public class ScheduleConsumerVerticleIT {
 
     @Test
     public void shouldNotReciveMessageWithFormatErrorAndCommitMessages(final TestContext context) {
-        produceMessage("123", "teste");
-        produceMessage("4456", "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}");
-
-        final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
-
-        final Async async = context.async(2);
-        this.vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
-
         vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
             context.fail("Error messages should not be received");
         });
 
-        final int producedMessage = 2;
+        final Async async = context.async(2);
         vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName(), message -> {
-            if (async.count() == producedMessage) {
-                async.complete();
-            }
+            async.countDown();
         });
+
+        produceMessage("123", "teste");
+        produceMessage("4456", "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}");
+
+        final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
+        this.vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
     }
 
     private void produceMessage(final String key, final String value) {
