@@ -1,20 +1,19 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
+import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConstants;
+import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestProducer;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
-import io.vertx.kafka.client.producer.KafkaProducer;
-import io.vertx.kafka.client.producer.KafkaProducerRecord;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,7 +28,7 @@ import java.time.LocalDateTime;
 public class ScheduleConsumerVerticleIT {
 
     @Rule
-    public KafkaContainer kafka = new KafkaContainer("5.2.1");
+    public KafkaContainer kafka = new KafkaContainer(KafkaTestConstants.KAFKA_DOCKER_VERSION);
     private JsonObject configuration;
     private Vertx vertx;
 
@@ -53,7 +52,7 @@ public class ScheduleConsumerVerticleIT {
         this.vertx.close();
     }
 
-    @Test
+    @Test // TODO melhorar
     public void shouldConsumeMessage(final TestContext context) {
         final CustomerSchema customerSchema = new CustomerSchema();
         customerSchema.setDocumentNumber("948948393849");
@@ -65,7 +64,7 @@ public class ScheduleConsumerVerticleIT {
         schema.setDateTime(LocalDateTime.now().plusDays(1));
         schema.setDescription("Complete Test");
 
-        produceMessage(customerSchema.getDocumentNumber(), Json.encode(schema));
+        KafkaTestProducer.create(vertx, configuration).send(ScheduleConsumerVerticle.SCHEDULE_REQUEST_TOPIC, customerSchema.getDocumentNumber(), Json.encode(schema));
 
         final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
 
@@ -91,20 +90,11 @@ public class ScheduleConsumerVerticleIT {
             async.countDown();
         });
 
-        produceMessage("123", "teste");
-        produceMessage("4456", "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}");
+        final KafkaTestProducer kafkaTestProducer = KafkaTestProducer.create(vertx, configuration);
+        kafkaTestProducer.send(ScheduleConsumerVerticle.SCHEDULE_REQUEST_TOPIC, "123", "teste");
+        kafkaTestProducer.send(ScheduleConsumerVerticle.SCHEDULE_REQUEST_TOPIC, "4456", "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}");
 
         final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
         this.vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
-    }
-
-    private void produceMessage(final String key, final String value) {
-        final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(this.configuration);
-        final KafkaProducer<String, String> producer = KafkaProducer.create(this.vertx, kafkaProducerConfiguration.createConfig());
-
-        final KafkaProducerRecord<String, String> producerRecord = KafkaProducerRecord.create(
-                ScheduleConsumerVerticle.SCHEDULE_REQUEST_TOPIC, key, value);
-
-        producer.send(producerRecord);
     }
 }

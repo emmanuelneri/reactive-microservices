@@ -59,3 +59,4 @@ TODO:
 - Tolerância a falha (Review)
 - Escalar consumers
 - Tracing
+- ReprocessId: Retornar apenas um em caso de falha

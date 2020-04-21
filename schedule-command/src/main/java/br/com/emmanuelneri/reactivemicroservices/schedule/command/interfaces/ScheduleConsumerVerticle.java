@@ -19,7 +19,7 @@ public class ScheduleConsumerVerticle extends AbstractVerticle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleConsumerVerticle.class);
     private static final String CONSUMER_GROUP_ID = "SCHEDULE_GROUP";
-    static final String SCHEDULE_REQUEST_TOPIC = "ScheduleRequested";
+    public static final String SCHEDULE_REQUEST_TOPIC = "ScheduleRequested";
 
     private final KafkaConsumerConfiguration configuration;
 

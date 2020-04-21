@@ -18,7 +18,7 @@ public class ScheduleCommandApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleCommandApplication.class);
     private static final String APPLICATION_NAME = "schedule-command";
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         final Vertx vertx = Vertx.vertx();
 
         ConfigRetrieverConfiguration.configure(vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
@@ -27,16 +27,19 @@ public class ScheduleCommandApplication {
                 return;
             }
 
-            JsonConfiguration.setUpDefault();
-            final JsonObject configuration = configurationHandler.result();
-            final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
-            final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
-            final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(configuration);
-
-
-            vertx.deployVerticle(new ScheduleRequestResultProducer(kafkaProducerConfiguration));
-            vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration));
-            vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
+            start(vertx, configurationHandler.result());
         });
+    }
+
+    static void start(final Vertx vertx, final JsonObject configuration) {
+        JsonConfiguration.setUpDefault();
+        final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
+        final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
+        final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(configuration);
+
+
+        vertx.deployVerticle(new ScheduleRequestResultProducer(kafkaProducerConfiguration));
+        vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration));
+        vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
     }
 }

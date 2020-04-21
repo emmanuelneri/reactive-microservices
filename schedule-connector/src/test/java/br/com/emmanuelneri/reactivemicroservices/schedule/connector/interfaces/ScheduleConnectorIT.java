@@ -7,6 +7,7 @@ import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Custo
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
+import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConstants;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -41,7 +42,7 @@ public class ScheduleConnectorIT {
     private Vertx vertx;
 
     @Rule
-    public KafkaContainer kafka = new KafkaContainer("5.2.1");
+    public KafkaContainer kafka = new KafkaContainer(KafkaTestConstants.KAFKA_DOCKER_VERSION);
     private JsonObject configuration;
 
     @Before

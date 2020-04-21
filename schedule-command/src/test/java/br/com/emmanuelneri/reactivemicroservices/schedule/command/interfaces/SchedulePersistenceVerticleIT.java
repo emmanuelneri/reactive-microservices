@@ -2,12 +2,11 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.cassandra.codec.LocalDateTimeCodec;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
+import br.com.emmanuelneri.reactivemicroservices.cassandra.test.CassandraTestConstants;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
-import com.datastax.driver.core.Cluster;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.test.CassandraInit;
 import com.datastax.driver.core.Row;
-import com.datastax.driver.core.Session;
 import com.datastax.driver.core.TypeCodec;
 import io.vertx.cassandra.CassandraClient;
 import io.vertx.cassandra.ResultSet;
@@ -18,7 +17,6 @@ import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,38 +31,15 @@ import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfa
 public class SchedulePersistenceVerticleIT {
 
     @Rule
-    public CassandraContainer cassandra = new CassandraContainer("cassandra:3.11");
+    public CassandraContainer cassandra = new CassandraContainer(CassandraTestConstants.CASSANDRA_DOCKER_VERSION);
 
     private JsonObject configuration;
     private Vertx vertx;
 
     @Before
     public void before() {
-        final Cluster cluster = cassandra.getCluster();
-
         this.vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
-
-        try (final Session session = cluster.connect()) {
-            final String address = session.getCluster().getMetadata().getAllHosts().stream().findAny().get().toString();
-            final String contactPoint = address.substring(address.indexOf("/") + 1, address.indexOf(":"));
-            final String port = address.substring(address.lastIndexOf(":") + 1);
-
-            configuration = new JsonObject()
-                    .put("cassandra.contactPoint", contactPoint)
-                    .put("cassandra.port", Integer.valueOf(port))
-                    .put("cassandra.keyspace", "test");
-
-
-            session.execute("CREATE KEYSPACE IF NOT EXISTS test WITH replication = " +
-                    "{'class':'SimpleStrategy','replication_factor':'1'};");
-
-            session.execute("USE test");
-
-            session.execute("CREATE TABLE IF NOT EXISTS test.schedule " +
-                    "(data_time timestamp, description text, document_number text, customer text, phone text, email text, " +
-                    "PRIMARY KEY(data_time, description, document_number))");
-        }
+        this.configuration = CassandraInit.create().start(cassandra);
     }
 
     @After
@@ -72,7 +47,7 @@ public class SchedulePersistenceVerticleIT {
         this.vertx.close();
     }
 
-    @Test
+    @Test // TODO melhorar
     public void shouldPersistSchedule(final TestContext context) {
         final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(this.configuration);
 

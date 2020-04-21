@@ -19,7 +19,7 @@ public class ScheduleRequestResultProducer extends AbstractVerticle {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleRequestResultProducer.class);
 
-    static final String SCHEDULE_REQUEST_TOPIC = "ScheduleRequestResultProcessed";
+    public static final String SCHEDULE_REQUEST_TOPIC = "ScheduleRequestResultProcessed";
     static final String SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RETURN_REQUEST_PROCESSED.getName();
 
 
