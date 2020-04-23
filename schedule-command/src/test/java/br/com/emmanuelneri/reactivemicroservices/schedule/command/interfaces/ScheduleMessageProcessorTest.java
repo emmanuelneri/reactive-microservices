@@ -103,6 +103,9 @@ public class ScheduleMessageProcessorTest {
 
             context.assertTrue(resultHandler.succeeded());
         });
+
+        asyncErrorNotification.awaitSuccess();
+        asyncReturnRequest.awaitSuccess();
     }
 
     @Test
