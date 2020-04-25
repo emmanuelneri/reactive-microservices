@@ -46,7 +46,7 @@ public class ScheduleMessageProcessorTest {
         final Async async = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
-            context.assertTrue(scheduleRequestResult.isSuccess());
+            context.assertTrue(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
             context.assertNotNull(scheduleRequestResult.getRequestId());
             async.complete();
         });
@@ -81,7 +81,7 @@ public class ScheduleMessageProcessorTest {
         final Async asyncReturnRequest = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
-            context.assertFalse(scheduleRequestResult.isSuccess());
+            context.assertFalse(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
             context.assertNotNull(scheduleRequestResult.getRequestId());
             context.assertEquals("dateTime is required", scheduleRequestResult.getDescription());
             asyncReturnRequest.complete();
@@ -121,7 +121,7 @@ public class ScheduleMessageProcessorTest {
         final Async asyncReturnRequest = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
-            context.assertFalse(scheduleRequestResult.isSuccess());
+            context.assertFalse(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
             context.assertNotNull(scheduleRequestResult.getRequestId());
             context.assertNotNull(scheduleRequestResult.getDescription());
             asyncReturnRequest.complete();
