@@ -12,33 +12,47 @@ import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.UUID;
 
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
 
 @RunWith(VertxUnitRunner.class)
 public class ScheduleMessageProcessorTest {
 
+    private Vertx vertx;
+
+    @Before
+    public void before() {
+        this.vertx = Vertx.vertx();
+        JsonConfiguration.setUpDefault();
+    }
+
+    @After
+    public void after() {
+        this.vertx.close();
+    }
+
     @Test
     public void shouldSucessProcess(final TestContext context) {
-        final Vertx vertx = Vertx.vertx();
         JsonConfiguration.setUpDefault();
-        vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
+        this.vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
 
         final Async async = context.async();
-        vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
             context.assertTrue(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
             context.assertNotNull(scheduleRequestResult.getRequestId());
             async.complete();
         });
 
-        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(vertx);
+        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
         final String messageValue = "{\"dateTime\":\"2020-05-09T12:14:50.786\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}";
 
         final Promise<Void> promise = Promise.promise();
@@ -57,11 +71,8 @@ public class ScheduleMessageProcessorTest {
 
     @Test
     public void shouldReturnFailWithInvalidSchema(final TestContext context) {
-        final Vertx vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
-
         final Async asyncErrorNotification = context.async();
-        vertx.eventBus().<JsonObject>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<JsonObject>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
             final InvalidMessage invalidMessage = messageResult.body().mapTo(InvalidMessage.class);
             context.assertEquals(InvalidMessageReason.BUSINESS_VALIDATION_FAILURE, invalidMessage.getReason());
             context.assertEquals("dateTime is required", invalidMessage.getCause());
@@ -69,7 +80,7 @@ public class ScheduleMessageProcessorTest {
         });
 
         final Async asyncReturnRequest = context.async();
-        vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
             context.assertFalse(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
             context.assertNotNull(scheduleRequestResult.getRequestId());
@@ -77,7 +88,7 @@ public class ScheduleMessageProcessorTest {
             asyncReturnRequest.complete();
         });
 
-        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(vertx);
+        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
         final String messageValue = "{\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}";
 
         final Promise<Void> promise = Promise.promise();
@@ -100,11 +111,8 @@ public class ScheduleMessageProcessorTest {
 
     @Test
     public void shouldNotReturnExceptionWithInvalidJsonMessageValue(final TestContext context) {
-        final Vertx vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
-
         final Async asyncErrorNotification = context.async();
-        vertx.eventBus().<JsonObject>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<JsonObject>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
             final InvalidMessage invalidMessage = messageResult.body().mapTo(InvalidMessage.class);
             context.assertEquals(InvalidMessageReason.VALUE_DECODE_FAILURE, invalidMessage.getReason());
             context.assertNotNull(invalidMessage.getCause());
@@ -112,7 +120,7 @@ public class ScheduleMessageProcessorTest {
         });
 
         final Async asyncReturnRequest = context.async();
-        vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
             context.assertFalse(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
             context.assertNotNull(scheduleRequestResult.getRequestId());
@@ -120,7 +128,7 @@ public class ScheduleMessageProcessorTest {
             asyncReturnRequest.complete();
         });
 
-        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(vertx);
+        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
         final String messageValue = "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}";
 
         final Promise<Void> promise = Promise.promise();
