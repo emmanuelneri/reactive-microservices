@@ -6,27 +6,25 @@ reactive-architecture
 ## Applications
 
 ### schedule-connector
-- Receving schedule request from HTTP Endpoint
-- Validating request body (synchronous)
-- Producing "ScheduleRequested" event to Kafka topic
-- If body validation or Kafka sender fails return bad request
-- If body validation and kafka sender ok return accepted http code and request id
+- Receive schedule request from HTTP Endpoint
+- Validate request body and require fields before response
+    - If the validation or Kafka sender fails return bad request
+    - If the validation and kafka sender ok return accepted http code and with an request id
+- Produce "ScheduleRequested" event to Kafka topic
 
 ### schedule-schema
-- Define Schedule  structure
+- Define Schedule structure
 
 ### schedule-command
-- Receving schedule from Kafka
-- Message consume 
+- Consume "ScheduleRequested" event from Kafka
   - Kafka Consumer with auto commit = false
+  - Only filled fields will be considered
   - Processing batch messages and commit only at the end
-  - In case of invalid schema, offset will be committed and message will be sent to a DLQ
-  - In case of unexpected error in any message, batch message will not be commit 
-  - In case of unexpected error in last message, the previous messages could be processed
-- Consume only filled fields 
-- Validate Schedule rules
- - If invalid business schedule, offset will be committed and message will be sent to a DLQ
-- Persist schedule in Cassandra
+  - If the invalid schema: offset will be committed and message will be sent to a DLQ (TODO)
+  - If the schedule has invalid business, the offset will be committed and message will be sent to a DLQ (TODO)
+  - If it happens any unexpected error, the batch messages will not be commit 
+  - If it happens unexpected error in last message, the previous messages could be processed
+- All schedule are persisted in Cassandra
   - Schedule and Customer persist in a single table
   - Table key is composed by dateTime, description and customer Document number 
 
