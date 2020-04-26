@@ -3,7 +3,6 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.codec.LocalDateTimeCodec;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.test.CassandraTestConstants;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleConsumerVerticle;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleRequestResultProducer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.test.CassandraInit;
@@ -13,6 +12,7 @@ import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConstants;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConsumer;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestProducer;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TypeCodec;
 import io.vertx.cassandra.CassandraClient;
@@ -50,8 +50,7 @@ public class ScheduleCommandApplicationIT {
 
     @Before
     public void before() {
-        this.vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
+        this.vertx = VertxBuilder.createAndConfigure();
         final JsonObject cassandraConfiguration = CassandraInit.create().start(cassandra);
 
         this.configuration = new JsonObject()

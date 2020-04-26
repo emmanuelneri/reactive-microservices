@@ -1,10 +1,10 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleConnectorEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Customer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
@@ -33,8 +33,7 @@ public class ScheduleEndpointIT {
 
     @Before
     public void before() {
-        this.vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
+        this.vertx = VertxBuilder.createAndConfigure();
         mockProducerRequest();
     }
 

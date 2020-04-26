@@ -4,10 +4,10 @@ import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfi
 import br.com.emmanuelneri.reactivemicroservices.commons.config.ConfigRetrieverConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleConsumerVerticle;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.SchedulePersistenceVerticle;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleRequestResultProducer;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -19,7 +19,7 @@ public class ScheduleCommandApplication {
     private static final String APPLICATION_NAME = "schedule-command";
 
     public static void main(final String[] args) {
-        final Vertx vertx = Vertx.vertx();
+        final Vertx vertx = VertxBuilder.createAndConfigure();
 
         ConfigRetrieverConfiguration.configure(vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
             if (configurationHandler.failed()) {
@@ -32,7 +32,6 @@ public class ScheduleCommandApplication {
     }
 
     static void start(final Vertx vertx, final JsonObject configuration) {
-        JsonConfiguration.setUpDefault();
         final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
         final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
         final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(configuration);

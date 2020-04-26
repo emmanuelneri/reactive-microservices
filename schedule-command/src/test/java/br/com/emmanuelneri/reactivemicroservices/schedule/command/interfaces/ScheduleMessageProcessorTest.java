@@ -2,9 +2,9 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessageReason;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleRequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -30,8 +30,7 @@ public class ScheduleMessageProcessorTest {
 
     @Before
     public void before() {
-        this.vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
+        this.vertx = VertxBuilder.createAndConfigure();
     }
 
     @After

@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.mapper;
+package br.com.emmanuelneri.reactivemicroservices.vertx.core;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -8,7 +8,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JsonConfiguration {
+final class JsonConfiguration {
 
     public static void setUpDefault() {
         DatabindCodec.mapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

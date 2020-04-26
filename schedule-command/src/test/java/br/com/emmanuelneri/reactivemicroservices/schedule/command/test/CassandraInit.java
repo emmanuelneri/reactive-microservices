@@ -1,7 +1,6 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.command.test;
 
 import br.com.emmanuelneri.reactivemicroservices.cassandra.test.CassandraTestConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
 import io.vertx.core.json.JsonObject;
@@ -13,9 +12,6 @@ public class CassandraInit {
 
     public JsonObject start(final CassandraContainer cassandra) {
         final Cluster cluster = cassandra.getCluster();
-
-        JsonConfiguration.setUpDefault();
-
         try (final Session session = cluster.connect()) {
             initKeyspace(session);
             createTable(session);

@@ -2,12 +2,12 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Customer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConstants;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServer;
@@ -56,8 +56,7 @@ public class ScheduleConnectorIT {
                 .put("kafka.offset.reset", "earliest")
                 .put("kafka.enable.auto.commit", false);
 
-        this.vertx = Vertx.vertx();
-        JsonConfiguration.setUpDefault();
+        this.vertx = VertxBuilder.createAndConfigure();
     }
 
     @After

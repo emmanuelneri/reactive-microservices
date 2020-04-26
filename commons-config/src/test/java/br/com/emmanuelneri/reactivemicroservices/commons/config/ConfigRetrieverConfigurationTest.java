@@ -1,5 +1,6 @@
 package br.com.emmanuelneri.reactivemicroservices.commons.config;
 
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Vertx;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -13,7 +14,7 @@ public class ConfigRetrieverConfigurationTest {
 
     @Test
     public void wrongApplicationNameShouldFailTest(final TestContext context) {
-        final Vertx vertx = Vertx.vertx();
+        final Vertx vertx = VertxBuilder.createAndConfigure();
 
         final Async async = context.async();
         ConfigRetrieverConfiguration.configure(vertx, "test")

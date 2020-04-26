@@ -3,10 +3,10 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector;
 import br.com.emmanuelneri.reactivemicroservices.commons.config.ConfigRetrieverConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.commons.config.HttpServerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces.ScheduleEndpoint;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces.ScheduleProducer;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.json.JsonObject;
@@ -20,7 +20,7 @@ public class ScheduleConnectorApplication {
     private static final String APPLICATION_NAME = "schedule-connector";
 
     public static void main(String[] args) {
-        final Vertx vertx = Vertx.vertx();
+        final Vertx vertx = VertxBuilder.createAndConfigure();
 
         ConfigRetrieverConfiguration.configure(vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
             if (configurationHandler.failed()) {
@@ -28,7 +28,6 @@ public class ScheduleConnectorApplication {
                 return;
             }
 
-            JsonConfiguration.setUpDefault();
             final JsonObject configuration = configurationHandler.result();
             final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
             final Router router = Router.router(vertx);

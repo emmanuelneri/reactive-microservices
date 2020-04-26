@@ -3,10 +3,10 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.codec.LocalDateTimeCodec;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.test.CassandraTestConstants;
-import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.test.CassandraInit;
+import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.TypeCodec;
 import io.vertx.cassandra.CassandraClient;
@@ -39,9 +39,8 @@ public class SchedulePersistenceVerticleIT {
 
     @Before
     public void before() {
-        this.vertx = Vertx.vertx();
+        this.vertx = VertxBuilder.createAndConfigure();
         this.configuration = CassandraInit.create().start(cassandra);
-        JsonConfiguration.setUpDefault();
     }
 
     @After
