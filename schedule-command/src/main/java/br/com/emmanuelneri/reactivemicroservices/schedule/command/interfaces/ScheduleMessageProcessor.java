@@ -44,7 +44,7 @@ final class ScheduleMessageProcessor {
                     }
 
                     ScheduleRequestResultBuilder.INSTANCE.success(record,
-                            requestResult -> this.vertx.eventBus().send(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
+                            requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
 
                     promise.complete();
                     LOGGER.info("message consumed {0}", record);
@@ -58,7 +58,7 @@ final class ScheduleMessageProcessor {
 
         if (resultHandler.cause() instanceof ValidationException) {
             invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
-            this.vertx.eventBus().send(INVALID_SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(invalidMessage));
+            this.vertx.eventBus().publish(INVALID_SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(invalidMessage));
             promise.complete();
         } else {
             invalidMessage = InvalidMessage.unexpectedFailure(record, resultHandler.cause());
@@ -66,6 +66,6 @@ final class ScheduleMessageProcessor {
         }
 
         ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage,
-                requestResult -> this.vertx.eventBus().send(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
+                requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
     }
 }

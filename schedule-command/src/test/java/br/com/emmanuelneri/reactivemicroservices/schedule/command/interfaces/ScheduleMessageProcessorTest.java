@@ -42,12 +42,14 @@ public class ScheduleMessageProcessorTest {
     public void shouldSucessProcess(final TestContext context) {
         this.vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
 
+        final String requestId = UUID.randomUUID().toString();
         final Async async = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
-            context.assertTrue(requestResult.isSuccess(), requestResult.toString());
-            context.assertNotNull(requestResult.getRequestId());
-            async.complete();
+            if (requestId.equals(requestResult.getRequestId())) {
+                context.assertTrue(requestResult.isSuccess(), requestResult.toString());
+                async.complete();
+            }
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
@@ -55,7 +57,7 @@ public class ScheduleMessageProcessorTest {
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "123", messageValue);
-        record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, UUID.randomUUID().toString().getBytes());
+        record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
         scheduleMessageProcessor.process(record, promise);
         promise.future().setHandler(resultHandler -> {
             if (resultHandler.failed()) {
@@ -77,13 +79,15 @@ public class ScheduleMessageProcessorTest {
             asyncErrorNotification.complete();
         });
 
+        final String requestId = UUID.randomUUID().toString();
         final Async asyncReturnRequest = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
-            context.assertFalse(requestResult.isSuccess(), requestResult.toString());
-            context.assertNotNull(requestResult.getRequestId());
-            context.assertEquals("dateTime is required", requestResult.getDescription());
-            asyncReturnRequest.complete();
+            if (requestId.equals(requestResult.getRequestId())) {
+                context.assertFalse(requestResult.isSuccess(), requestResult.toString());
+                context.assertEquals("dateTime is required", requestResult.getDescription());
+                asyncReturnRequest.complete();
+            }
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
@@ -91,7 +95,7 @@ public class ScheduleMessageProcessorTest {
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "123", messageValue);
-        record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, UUID.randomUUID().toString().getBytes());
+        record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
         scheduleMessageProcessor.process(record, promise);
 
         promise.future().setHandler(resultHandler -> {
@@ -117,12 +121,15 @@ public class ScheduleMessageProcessorTest {
             asyncErrorNotification.complete();
         });
 
+        final String requestId = UUID.randomUUID().toString();
         final Async asyncReturnRequest = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
-            context.assertFalse(requestResult.isSuccess(), requestResult.toString());
-            context.assertNotNull(requestResult.getRequestId());
-            context.assertNotNull(requestResult.getDescription());
+            if (requestId.equals(requestResult.getRequestId())) {
+                context.assertFalse(requestResult.isSuccess(), requestResult.toString());
+                context.assertNotNull(requestResult.getDescription());
+            }
+
             asyncReturnRequest.complete();
         });
 
