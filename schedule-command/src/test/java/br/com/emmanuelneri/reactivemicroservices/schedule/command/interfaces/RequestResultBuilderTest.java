@@ -12,7 +12,7 @@ import org.junit.runner.RunWith;
 import java.util.UUID;
 
 @RunWith(VertxUnitRunner.class)
-public class ScheduleRequestResultBuilderTest {
+public class RequestResultBuilderTest {
 
     @Test
     public void shouldReturnResultInSuccessRecord(final TestContext context) {

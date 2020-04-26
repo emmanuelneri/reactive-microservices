@@ -2,7 +2,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleRequestResult;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
@@ -36,11 +36,11 @@ public class ScheduleRequestResultProducer extends AbstractVerticle {
     }
 
     private void produce(final KafkaProducer<String, String> kafkaProducer, final Message<JsonObject> message) {
-        final ScheduleRequestResult scheduleRequestResult = message.body().mapTo(ScheduleRequestResult.class);
+        final RequestResult requestResult = message.body().mapTo(RequestResult.class);
 
         final KafkaProducerRecord<String, String> kafkaProducerRecord =
                 KafkaProducerRecord.create(SCHEDULE_REQUEST_TOPIC,
-                        scheduleRequestResult.getRequestId(), Json.encode(scheduleRequestResult));
+                        requestResult.getRequestId(), Json.encode(requestResult));
 
         kafkaProducer.send(kafkaProducerRecord, result -> {
             if (result.failed()) {

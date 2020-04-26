@@ -2,7 +2,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessageReason;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleRequestResult;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Promise;
@@ -44,9 +44,9 @@ public class ScheduleMessageProcessorTest {
 
         final Async async = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
-            context.assertTrue(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
-            context.assertNotNull(scheduleRequestResult.getRequestId());
+            final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
+            context.assertTrue(requestResult.isSuccess(), requestResult.toString());
+            context.assertNotNull(requestResult.getRequestId());
             async.complete();
         });
 
@@ -79,10 +79,10 @@ public class ScheduleMessageProcessorTest {
 
         final Async asyncReturnRequest = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
-            context.assertFalse(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
-            context.assertNotNull(scheduleRequestResult.getRequestId());
-            context.assertEquals("dateTime is required", scheduleRequestResult.getDescription());
+            final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
+            context.assertFalse(requestResult.isSuccess(), requestResult.toString());
+            context.assertNotNull(requestResult.getRequestId());
+            context.assertEquals("dateTime is required", requestResult.getDescription());
             asyncReturnRequest.complete();
         });
 
@@ -119,10 +119,10 @@ public class ScheduleMessageProcessorTest {
 
         final Async asyncReturnRequest = context.async();
         this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final ScheduleRequestResult scheduleRequestResult = messageResult.body().mapTo(ScheduleRequestResult.class);
-            context.assertFalse(scheduleRequestResult.isSuccess(), scheduleRequestResult.toString());
-            context.assertNotNull(scheduleRequestResult.getRequestId());
-            context.assertNotNull(scheduleRequestResult.getDescription());
+            final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
+            context.assertFalse(requestResult.isSuccess(), requestResult.toString());
+            context.assertNotNull(requestResult.getRequestId());
+            context.assertNotNull(requestResult.getDescription());
             asyncReturnRequest.complete();
         });
 

@@ -9,13 +9,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ScheduleRequestResult {
+public class RequestResult {
 
     private String requestId;
     private boolean success;
     private String description;
 
-    public ScheduleRequestResult(final String requestId, final boolean success, final String description) {
+    public RequestResult(final String requestId, final boolean success, final String description) {
         this.requestId = requestId;
         this.success = success;
         this.description = description;

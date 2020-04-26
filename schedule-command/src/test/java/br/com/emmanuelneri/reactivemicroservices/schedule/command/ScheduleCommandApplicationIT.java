@@ -7,7 +7,7 @@ import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.Sch
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleRequestResultProducer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.test.CassandraInit;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleRequestResult;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConstants;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConsumer;
@@ -94,9 +94,9 @@ public class ScheduleCommandApplicationIT {
                 .build(ScheduleRequestResultProducer.SCHEDULE_REQUEST_TOPIC);
 
         kafkaConsumer.handler(consumerRecord -> {
-            final ScheduleRequestResult scheduleRequestResult = Json.decodeValue(consumerRecord.value(), ScheduleRequestResult.class);
-            context.assertTrue(scheduleRequestResult.isSuccess());
-            context.assertEquals(requestId, scheduleRequestResult.getRequestId());
+            final RequestResult requestResult = Json.decodeValue(consumerRecord.value(), RequestResult.class);
+            context.assertTrue(requestResult.isSuccess());
+            context.assertEquals(requestId, requestResult.getRequestId());
 
             final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(configuration);
             final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
