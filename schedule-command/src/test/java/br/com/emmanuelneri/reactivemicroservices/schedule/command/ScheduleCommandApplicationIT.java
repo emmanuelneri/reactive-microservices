@@ -3,6 +3,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.codec.LocalDateTimeCodec;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.test.CassandraTestConstants;
+import br.com.emmanuelneri.reactivemicroservices.mapper.JsonConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleConsumerVerticle;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleRequestResultProducer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.test.CassandraInit;
@@ -50,6 +51,7 @@ public class ScheduleCommandApplicationIT {
     @Before
     public void before() {
         this.vertx = Vertx.vertx();
+        JsonConfiguration.setUpDefault();
         final JsonObject cassandraConfiguration = CassandraInit.create().start(cassandra);
 
         this.configuration = new JsonObject()

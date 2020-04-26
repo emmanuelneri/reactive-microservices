@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import java.util.UUID;
 
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS;
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS;
 
 @RunWith(VertxUnitRunner.class)
 public class ScheduleMessageProcessorTest {
@@ -41,7 +41,6 @@ public class ScheduleMessageProcessorTest {
 
     @Test
     public void shouldSucessProcess(final TestContext context) {
-        JsonConfiguration.setUpDefault();
         this.vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
 
         final Async async = context.async();

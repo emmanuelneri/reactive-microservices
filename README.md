@@ -36,8 +36,7 @@ reactive-architecture
 2. Create datatables ```docker exec -it cassandra bash -c "cqlsh -f /tmp/schedule.cql"```
 
 
-TODO: 
-
+## TODO: 
 
 - Tolerante reader
 - idempotente consumer
