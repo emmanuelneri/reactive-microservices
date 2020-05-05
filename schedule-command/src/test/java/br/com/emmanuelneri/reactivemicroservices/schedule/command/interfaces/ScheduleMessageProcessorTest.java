@@ -55,8 +55,8 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final String messageValue = String.format("{\"dateTime\":\"%s\",\"customer\":{\"name\":\"%s\",\"documentNumber\":%s,\"phone\":\"%s\"},\"description\":\"%s\"}",
-                LocalDateTime.now(), "Customer 1", "948948393849", "4499099493", "Success Test");
+        final String messageValue = String.format("{\"dateTime\": %s,\"customer\":{\"name\":\"%s\",\"documentNumber\":%s,\"phone\":\"%s\"},\"description\":\"%s\"}",
+                Json.encode(LocalDateTime.now()), "Customer 1", "948948393849", "4499099493", "Success Test");
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("success.topic", 0, 0, "1", messageValue);
