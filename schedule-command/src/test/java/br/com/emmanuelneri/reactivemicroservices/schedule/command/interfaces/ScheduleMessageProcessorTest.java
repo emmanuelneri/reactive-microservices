@@ -7,6 +7,7 @@ import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -17,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
@@ -53,7 +55,8 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final String messageValue = "{\"dateTime\":\"2020-05-09T12:14:50.786\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Success Test\"}";
+        final String messageValue = String.format("{\"dateTime\":\"%s\",\"customer\":{\"name\":\"%s\",\"documentNumber\":%s,\"phone\":\"%s\"},\"description\":\"%s\"}",
+                LocalDateTime.now(), "Customer 1", "948948393849", "4499099493", "Success Test");
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("success.topic", 0, 0, "1", messageValue);
