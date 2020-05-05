@@ -7,6 +7,9 @@ import io.vertx.core.json.jackson.DatabindCodec;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.time.ZoneId;
+import java.util.TimeZone;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 final class JsonConfiguration {
 
@@ -14,5 +17,6 @@ final class JsonConfiguration {
         DatabindCodec.mapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         DatabindCodec.mapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         DatabindCodec.mapper().registerModule(new JavaTimeModule());
+        DatabindCodec.mapper().setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC")));
     }
 }
