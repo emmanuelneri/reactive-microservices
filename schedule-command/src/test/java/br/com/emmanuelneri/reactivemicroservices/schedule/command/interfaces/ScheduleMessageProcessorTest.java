@@ -2,6 +2,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessageReason;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
@@ -55,8 +56,17 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final String messageValue = String.format("{\"dateTime\": %s,\"customer\":{\"name\":\"%s\",\"documentNumber\":%s,\"phone\":\"%s\"},\"description\":\"%s\"}",
-                Json.encode(LocalDateTime.now()), "Customer 1", "948948393849", "4499099493", "Success Test");
+        final CustomerSchema customerSchema = new CustomerSchema();
+        customerSchema.setDocumentNumber("948948393849");
+        customerSchema.setEmail("teste@gmail.com");
+        customerSchema.setPhone("4499099493");
+        customerSchema.setName("Customer 1");
+        final ScheduleSchema schema = new ScheduleSchema();
+        schema.setDescription("Success Test");
+        schema.setDateTime(LocalDateTime.now());
+        schema.setCustomer(customerSchema);
+
+        final String messageValue = Json.encode(schema);
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("success.topic", 0, 0, "1", messageValue);
