@@ -39,7 +39,7 @@ public class ScheduleMessageProcessorTest {
     }
 
     @Test
-    public void shouldSucessProcess(final TestContext context) {
+    public void shouldSuccessProcess(final TestContext context) {
         this.vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
 
         final String requestId = UUID.randomUUID().toString();
@@ -53,10 +53,10 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final String messageValue = "{\"dateTime\":\"2020-05-09T12:14:50.786\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}";
+        final String messageValue = "{\"dateTime\":\"2020-05-09T12:14:50.786\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Success Test\"}";
 
         final Promise<Void> promise = Promise.promise();
-        final ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "123", messageValue);
+        final ConsumerRecord<String, String> record = new ConsumerRecord<>("success.topic", 0, 0, "1", messageValue);
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
         scheduleMessageProcessor.process(record, promise);
         promise.future().setHandler(resultHandler -> {
@@ -91,10 +91,10 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final String messageValue = "{\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}";
+        final String messageValue = "{\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Invalid Schema Test\"}";
 
         final Promise<Void> promise = Promise.promise();
-        final ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "123", messageValue);
+        final ConsumerRecord<String, String> record = new ConsumerRecord<>("invalid.schema.topic", 0, 0, "2", messageValue);
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
         scheduleMessageProcessor.process(record, promise);
 
@@ -134,10 +134,10 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final String messageValue = "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Complete Test\"}";
+        final String messageValue = "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Invalid Json Test\"}";
 
         final Promise<Void> promise = Promise.promise();
-        final ConsumerRecord<String, String> record = new ConsumerRecord<>("topic", 0, 0, "123", messageValue);
+        final ConsumerRecord<String, String> record = new ConsumerRecord<>("invalid.json.topic", 0, 0, "3", messageValue);
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, UUID.randomUUID().toString().getBytes());
         scheduleMessageProcessor.process(record, promise);
 
