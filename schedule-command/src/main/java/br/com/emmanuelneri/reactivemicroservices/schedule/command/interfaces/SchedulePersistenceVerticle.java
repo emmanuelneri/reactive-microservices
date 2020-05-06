@@ -8,7 +8,7 @@ import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.PreparedStatement;
 import io.vertx.cassandra.CassandraClient;
 import io.vertx.core.AbstractVerticle;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.Json;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
     @Override
     public void start() {
         final CassandraClient client = CassandraClient.createShared(vertx, cassandraConfiguration.getOptions());
-        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RECEIVED_ADDRESS, message -> {
+        this.vertx.eventBus().<String>consumer(SCHEDULE_RECEIVED_ADDRESS, message -> {
             client.prepare("INSERT INTO schedule (data_time, description, document_number, customer, phone, email) VALUES (?,?,?,?,?,?)", prepareResultHandler -> {
                 if (prepareResultHandler.failed()) {
                     LOGGER.error("prepareStatement error", prepareResultHandler.cause());
@@ -38,7 +38,7 @@ public class SchedulePersistenceVerticle extends AbstractVerticle {
                 final PreparedStatement preparedStatement = prepareResultHandler.result();
                 preparedStatement.getCodecRegistry().register(LocalDateTimeCodec.instance);
 
-                final Schedule schedule = message.body().mapTo(Schedule.class);
+                final Schedule schedule = Json.decodeValue(message.body(), Schedule.class);
                 final BoundStatement boundStatement = preparedStatement
                         .bind(schedule.getDateTime(), schedule.getDescription(), schedule.getDocumentNumber(),
                                 schedule.getCustomer(), schedule.getPhone(), schedule.getEmail());

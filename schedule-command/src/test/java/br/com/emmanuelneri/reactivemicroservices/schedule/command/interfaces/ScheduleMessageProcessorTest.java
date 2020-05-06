@@ -9,7 +9,6 @@ import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -48,8 +47,8 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async async = context.async();
-        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
+        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+            final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertTrue(requestResult.isSuccess(), requestResult.toString());
                 async.complete();
@@ -86,8 +85,8 @@ public class ScheduleMessageProcessorTest {
     @Test
     public void shouldReturnFailWithInvalidSchema(final TestContext context) {
         final Async asyncErrorNotification = context.async();
-        this.vertx.eventBus().<JsonObject>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
-            final InvalidMessage invalidMessage = messageResult.body().mapTo(InvalidMessage.class);
+        this.vertx.eventBus().<String>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
+            final InvalidMessage invalidMessage = Json.decodeValue(messageResult.body(), InvalidMessage.class);
             context.assertEquals(InvalidMessageReason.BUSINESS_VALIDATION_FAILURE, invalidMessage.getReason());
             context.assertEquals("dateTime is required", invalidMessage.getCause());
             asyncErrorNotification.complete();
@@ -95,8 +94,8 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async asyncReturnRequest = context.async();
-        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
+        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+            final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertFalse(requestResult.isSuccess(), requestResult.toString());
                 context.assertEquals("dateTime is required", requestResult.getDescription());
@@ -128,8 +127,8 @@ public class ScheduleMessageProcessorTest {
     @Test
     public void shouldNotReturnExceptionWithInvalidJsonMessageValue(final TestContext context) {
         final Async asyncErrorNotification = context.async();
-        this.vertx.eventBus().<JsonObject>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
-            final InvalidMessage invalidMessage = messageResult.body().mapTo(InvalidMessage.class);
+        this.vertx.eventBus().<String>consumer(INVALID_SCHEDULE_RECEIVED_ADDRESS, messageResult -> {
+            final InvalidMessage invalidMessage = Json.decodeValue(messageResult.body(), InvalidMessage.class);
             context.assertEquals(InvalidMessageReason.VALUE_DECODE_FAILURE, invalidMessage.getReason());
             context.assertNotNull(invalidMessage.getCause());
             asyncErrorNotification.complete();
@@ -137,8 +136,8 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async asyncReturnRequest = context.async();
-        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final RequestResult requestResult = messageResult.body().mapTo(RequestResult.class);
+        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+            final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertFalse(requestResult.isSuccess(), requestResult.toString());
                 context.assertNotNull(requestResult.getDescription());

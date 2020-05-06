@@ -7,7 +7,6 @@ import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.Message;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import io.vertx.kafka.client.producer.KafkaProducer;
@@ -32,11 +31,11 @@ public class ScheduleRequestResultProducer extends AbstractVerticle {
     @Override
     public void start() throws Exception {
         final KafkaProducer<String, String> kafkaProducer = KafkaProducer.create(this.vertx, this.kafkaProducerConfiguration);
-        this.vertx.eventBus().<JsonObject>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, message -> produce(kafkaProducer, message));
+        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, message -> produce(kafkaProducer, message));
     }
 
-    private void produce(final KafkaProducer<String, String> kafkaProducer, final Message<JsonObject> message) {
-        final RequestResult requestResult = message.body().mapTo(RequestResult.class);
+    private void produce(final KafkaProducer<String, String> kafkaProducer, final Message<String> message) {
+        final RequestResult requestResult = Json.decodeValue(message.body(), RequestResult.class);
 
         final KafkaProducerRecord<String, String> kafkaProducerRecord =
                 KafkaProducerRecord.create(SCHEDULE_REQUEST_TOPIC,

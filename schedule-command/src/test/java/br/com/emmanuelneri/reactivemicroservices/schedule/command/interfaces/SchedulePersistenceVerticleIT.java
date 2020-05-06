@@ -12,6 +12,7 @@ import com.datastax.driver.core.TypeCodec;
 import io.vertx.cassandra.CassandraClient;
 import io.vertx.cassandra.ResultSet;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
@@ -67,7 +68,7 @@ public class SchedulePersistenceVerticleIT {
                 context.fail(deployHandler.cause());
             }
 
-            this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(schedule), requestResultHandler -> {
+            this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, Json.encode(schedule), requestResultHandler -> {
                 if (requestResultHandler.failed()) {
                     context.fail(requestResultHandler.cause());
                     return;
@@ -118,7 +119,7 @@ public class SchedulePersistenceVerticleIT {
         final Schedule schedule = new Schedule();
 
         final Async async = context.async();
-        this.vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), JsonObject.mapFrom(schedule), requestResultHandler -> {
+        this.vertx.eventBus().request(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), Json.encode(schedule), requestResultHandler -> {
             context.assertTrue(requestResultHandler.failed());
             context.assertNotNull(requestResultHandler.cause());
             async.complete();

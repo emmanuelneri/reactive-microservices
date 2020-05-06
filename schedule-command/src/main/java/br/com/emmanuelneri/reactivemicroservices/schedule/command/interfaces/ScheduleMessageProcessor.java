@@ -7,7 +7,7 @@ import br.com.emmanuelneri.reactivemicroservices.schedule.command.exceptions.Val
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.json.JsonObject;
+import io.vertx.core.json.Json;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 import lombok.AllArgsConstructor;
@@ -37,14 +37,14 @@ final class ScheduleMessageProcessor {
                     return;
                 }
 
-                this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(schedule), resultHandler -> {
+                this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, Json.encode(schedule), resultHandler -> {
                     if (resultHandler.failed()) {
                         failedHandler(record, promise, resultHandler);
                         return;
                     }
 
                     ScheduleRequestResultBuilder.INSTANCE.success(record,
-                            requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
+                            requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
 
                     promise.complete();
                     LOGGER.info("message consumed {0}", record);
@@ -58,7 +58,7 @@ final class ScheduleMessageProcessor {
 
         if (resultHandler.cause() instanceof ValidationException) {
             invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
-            this.vertx.eventBus().publish(INVALID_SCHEDULE_RECEIVED_ADDRESS, JsonObject.mapFrom(invalidMessage));
+            this.vertx.eventBus().publish(INVALID_SCHEDULE_RECEIVED_ADDRESS, Json.encode(invalidMessage));
             promise.complete();
         } else {
             invalidMessage = InvalidMessage.unexpectedFailure(record, resultHandler.cause());
@@ -66,6 +66,6 @@ final class ScheduleMessageProcessor {
         }
 
         ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage,
-                requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, JsonObject.mapFrom(requestResult)));
+                requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
     }
 }

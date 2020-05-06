@@ -69,8 +69,8 @@ public class ScheduleConsumerVerticleIT {
 
         final Async async = context.async();
         this.vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
-        vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
-            final Schedule schedule = message.body().mapTo(Schedule.class);
+        vertx.eventBus().<String>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
+            final Schedule schedule = Json.decodeValue(message.body(), Schedule.class);
             Assert.assertNotNull(schedule);
             Assert.assertEquals("Complete Test", schedule.getDescription());
             message.reply("ok");
@@ -80,12 +80,12 @@ public class ScheduleConsumerVerticleIT {
 
     @Test
     public void shouldNotReciveMessageWithFormatErrorAndCommitMessages(final TestContext context) {
-        vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
+        vertx.eventBus().<String>consumer(ScheduleCommandEvents.SCHEDULE_RECEIVED.getName(), message -> {
             context.fail("Error messages should not be received");
         });
 
         final Async async = context.async(2);
-        vertx.eventBus().<JsonObject>consumer(ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName(), message -> {
+        vertx.eventBus().<String>consumer(ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName(), message -> {
             async.countDown();
         });
 
