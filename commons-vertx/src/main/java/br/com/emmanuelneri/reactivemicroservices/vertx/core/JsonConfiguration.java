@@ -2,7 +2,6 @@ package br.com.emmanuelneri.reactivemicroservices.vertx.core;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.vertx.core.json.jackson.DatabindCodec;
 import lombok.AccessLevel;
@@ -15,7 +14,6 @@ final class JsonConfiguration {
         DatabindCodec.mapper().configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
         DatabindCodec.mapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
         DatabindCodec.mapper().registerModule(new JavaTimeModule());
-        DatabindCodec.mapper().registerModule(new Jdk8Module());
         DatabindCodec.mapper().setTimeZone(DateConfiguration.DEFAULT_TIME_ZONE);
     }
 }

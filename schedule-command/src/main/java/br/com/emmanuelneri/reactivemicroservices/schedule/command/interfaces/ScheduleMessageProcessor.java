@@ -26,7 +26,7 @@ final class ScheduleMessageProcessor {
     void process(final ConsumerRecord<String, String> record, final Promise<Void> promise) {
         ScheduleMapper.INSTANCE.map(record, mapResultHandler -> {
             if (mapResultHandler.failed()) {
-                LOGGER.error("map error", mapResultHandler.failed());
+                LOGGER.error("map error", mapResultHandler.cause());
                 failedHandler(record, promise, mapResultHandler);
                 return;
             }
@@ -34,13 +34,14 @@ final class ScheduleMessageProcessor {
             final Schedule schedule = mapResultHandler.result();
             schedule.validate(validateResultHandler -> {
                 if (validateResultHandler.failed()) {
-                    LOGGER.error("validate error", validateResultHandler.failed());
+                    LOGGER.error("validate error", validateResultHandler.cause());
                     failedHandler(record, promise, validateResultHandler);
                     return;
                 }
 
                 this.vertx.eventBus().request(SCHEDULE_RECEIVED_ADDRESS, Json.encode(schedule), resultHandler -> {
                     if (resultHandler.failed()) {
+                        LOGGER.error("request error", resultHandler.cause());
                         failedHandler(record, promise, resultHandler);
                         return;
                     }
@@ -62,9 +63,14 @@ final class ScheduleMessageProcessor {
             invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
             this.vertx.eventBus().publish(INVALID_SCHEDULE_RECEIVED_ADDRESS, Json.encode(invalidMessage));
             promise.complete();
+
+            LOGGER.error("resultHandler.cause()", resultHandler.cause());
         } else {
             invalidMessage = InvalidMessage.unexpectedFailure(record, resultHandler.cause());
             promise.fail(resultHandler.cause());
+
+            LOGGER.error("else", resultHandler.cause());
+
         }
 
         ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage,
