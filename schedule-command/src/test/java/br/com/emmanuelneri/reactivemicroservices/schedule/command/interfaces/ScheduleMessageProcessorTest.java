@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.UUID;
 
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
@@ -61,9 +60,10 @@ public class ScheduleMessageProcessorTest {
         customerSchema.setEmail("teste@gmail.com");
         customerSchema.setPhone("4499099493");
         customerSchema.setName("Customer 1");
+
         final ScheduleSchema schema = new ScheduleSchema();
         schema.setDescription("Success Test");
-        schema.setDateTime(LocalDateTime.now(ZoneId.of("UTC")));
+        schema.setDateTime(LocalDateTime.now());
         schema.setCustomer(customerSchema);
 
         final String messageValue = Json.encode(schema);
