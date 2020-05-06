@@ -10,24 +10,16 @@ jobs:
     steps:
       - checkout
       - run: mvn -B compile -DskipTests
-      - save_cache:
-          paths:
-            - ~/.m2
-          key: circleci-reactive-microservices-{{ checksum "pom.xml" }}
   unit-test:
     docker:
       - image: circleci/openjdk:8
     steps:
       - checkout
-      - restore_cache:
-          key: circleci-reactive-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B test
   integration-test:
     machine: true
     steps:
       - checkout
-      - restore_cache:
-          key: circleci-reactive-microservices-{{ checksum "pom.xml" }}
       - run: mvn -B verify
 
 workflows:
