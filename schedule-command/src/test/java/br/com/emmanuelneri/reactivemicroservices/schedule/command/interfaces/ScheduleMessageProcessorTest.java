@@ -2,14 +2,12 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessageReason;
-import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
-import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -19,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
@@ -43,10 +40,6 @@ public class ScheduleMessageProcessorTest {
 
     @Test
     public void shouldSuccessProcess(final TestContext context) {
-        System.out.println("--------------");
-        System.out.println(Json.mapper.getRegisteredModuleIds().toString());
-        System.out.println(DatabindCodec.mapper().getRegisteredModuleIds().toString());
-        System.out.println("--------------");
         this.vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
 
         final String requestId = UUID.randomUUID().toString();
@@ -60,18 +53,7 @@ public class ScheduleMessageProcessorTest {
         });
 
         final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
-        final CustomerSchema customerSchema = new CustomerSchema();
-        customerSchema.setDocumentNumber("948948393849");
-        customerSchema.setEmail("teste@gmail.com");
-        customerSchema.setPhone("4499099493");
-        customerSchema.setName("Customer 1");
-
-        final ScheduleSchema schema = new ScheduleSchema();
-        schema.setDescription("Success Test");
-        schema.setDateTime(LocalDateTime.now());
-        schema.setCustomer(customerSchema);
-
-        final String messageValue = Json.encode(schema);
+        final String messageValue = "{\"dateTime\":\"2020-05-09T12:14:50.786\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Success Test\"}";
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("success.topic", 0, 0, "1", messageValue);
