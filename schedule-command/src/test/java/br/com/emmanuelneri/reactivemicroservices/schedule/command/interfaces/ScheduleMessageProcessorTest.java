@@ -9,6 +9,7 @@ import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
+import io.vertx.core.json.jackson.DatabindCodec;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
 import io.vertx.ext.unit.junit.VertxUnitRunner;
@@ -42,6 +43,10 @@ public class ScheduleMessageProcessorTest {
 
     @Test
     public void shouldSuccessProcess(final TestContext context) {
+        System.out.println("--------------");
+        System.out.println(Json.mapper.getRegisteredModuleIds().toString());
+        System.out.println(DatabindCodec.mapper().getRegisteredModuleIds().toString());
+        System.out.println("--------------");
         this.vertx.eventBus().consumer(SCHEDULE_RECEIVED_ADDRESS, messageResult -> messageResult.reply("ok"));
 
         final String requestId = UUID.randomUUID().toString();
