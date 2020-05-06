@@ -26,6 +26,7 @@ final class ScheduleMessageProcessor {
     void process(final ConsumerRecord<String, String> record, final Promise<Void> promise) {
         ScheduleMapper.INSTANCE.map(record, mapResultHandler -> {
             if (mapResultHandler.failed()) {
+                LOGGER.error("map error", mapResultHandler.failed());
                 failedHandler(record, promise, mapResultHandler);
                 return;
             }
@@ -33,6 +34,7 @@ final class ScheduleMessageProcessor {
             final Schedule schedule = mapResultHandler.result();
             schedule.validate(validateResultHandler -> {
                 if (validateResultHandler.failed()) {
+                    LOGGER.error("validate error", validateResultHandler.failed());
                     failedHandler(record, promise, validateResultHandler);
                     return;
                 }
