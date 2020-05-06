@@ -44,8 +44,8 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async async = context.async();
-        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
-            final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
+        this.vertx.eventBus().consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+            final RequestResult requestResult = Json.decodeValue(messageResult.body().toString(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertTrue(requestResult.isSuccess(), requestResult.toString());
                 async.complete();

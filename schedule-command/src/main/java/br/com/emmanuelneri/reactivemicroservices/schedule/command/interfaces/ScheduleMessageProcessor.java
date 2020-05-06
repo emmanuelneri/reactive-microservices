@@ -47,6 +47,7 @@ final class ScheduleMessageProcessor {
                             requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
 
                     promise.complete();
+                    LOGGER.info("message consumed {0}", record);
                 });
             });
         });
