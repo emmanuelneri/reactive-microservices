@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper;
 
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.exceptions.InvalidScheduleSchemaException;
@@ -14,11 +14,11 @@ import lombok.NoArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-final class ScheduleMapper {
+public final class ScheduleMapper {
 
-    static final ScheduleMapper INSTANCE = new ScheduleMapper();
+    public static final ScheduleMapper INSTANCE = new ScheduleMapper();
 
-    void map(final ConsumerRecord<String, String> record, final Handler<AsyncResult<Schedule>> handler) {
+    public void map(final ConsumerRecord<String, String> record, final Handler<AsyncResult<Schedule>> handler) {
         try {
             final ScheduleSchema schema = Json.decodeValue(record.value(), ScheduleSchema.class);
 

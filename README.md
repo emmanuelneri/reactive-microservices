@@ -10,7 +10,8 @@ reactive-architecture
 - Receive schedule request from HTTP Endpoint
 - Validate request body and require fields before response
     - If the validation or Kafka sender fails return bad request
-    - If the validation and kafka sender ok return accepted http code and with an request id
+    - If the validation and kafka sender ok return accepted http code
+- Endpoint response a request Id to get processed request back
 - Produce "ScheduleRequested" event to Kafka topic
 
 ### schedule-schema
@@ -28,6 +29,9 @@ reactive-architecture
 - All schedule are persisted in Cassandra
   - Schedule and Customer persist in a single table
   - Table key is composed by dateTime, description and customer Document number 
+- After processed produce schedule event
+  - ScheduleProcessed is produced with requestId 
+  - Schedule change topic is produced
 
 ## Running environment 
 

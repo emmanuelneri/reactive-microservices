@@ -1,6 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
 
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.CompositeFuture;
 import io.vertx.core.Future;

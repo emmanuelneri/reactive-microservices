@@ -1,9 +1,11 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.ScheduleCommandEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.exceptions.ValidationException;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper.ScheduleMapper;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper.ScheduleRequestResultBuilder;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -14,16 +16,16 @@ import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 @AllArgsConstructor(staticName = "create")
-final class ScheduleMessageProcessor {
+public final class ScheduleMessageProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleConsumerVerticle.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleMessageProcessor.class);
     static final String SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RECEIVED.getName();
     static final String INVALID_SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName();
     static final String SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RETURN_REQUEST_PROCESSED.getName();
 
     private final Vertx vertx;
 
-    void process(final ConsumerRecord<String, String> record, final Promise<Void> promise) {
+    public void process(final ConsumerRecord<String, String> record, final Promise<Void> promise) {
         ScheduleMapper.INSTANCE.map(record, mapResultHandler -> {
             if (mapResultHandler.failed()) {
                 failedHandler(record, promise, mapResultHandler);
@@ -44,7 +46,7 @@ final class ScheduleMessageProcessor {
                     }
 
                     ScheduleRequestResultBuilder.INSTANCE.success(record,
-                            requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
+                        requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
 
                     promise.complete();
                     LOGGER.info("message consumed {0}", record);
@@ -53,19 +55,21 @@ final class ScheduleMessageProcessor {
         });
     }
 
-    private void failedHandler(final ConsumerRecord<String, String> record, final Promise<Void> promise, final AsyncResult<?> resultHandler) {
+    private void failedHandler(final ConsumerRecord<String, String> record, final Promise<Void> promise,
+        final AsyncResult<?> resultHandler) {
         InvalidMessage invalidMessage;
 
         if (resultHandler.cause() instanceof ValidationException) {
-            invalidMessage = ((ValidationException) resultHandler.cause()).buildErrorMessage(record);
+            invalidMessage = ((ValidationException)resultHandler.cause()).buildErrorMessage(record);
             this.vertx.eventBus().publish(INVALID_SCHEDULE_RECEIVED_ADDRESS, Json.encode(invalidMessage));
             promise.complete();
-        } else {
+        }
+        else {
             invalidMessage = InvalidMessage.unexpectedFailure(record, resultHandler.cause());
             promise.fail(resultHandler.cause());
         }
 
         ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage,
-                requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
+            requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
     }
 }

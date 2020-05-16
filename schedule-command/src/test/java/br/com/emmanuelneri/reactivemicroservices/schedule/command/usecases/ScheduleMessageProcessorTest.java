@@ -1,7 +1,8 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessageReason;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
@@ -22,9 +23,9 @@ import org.junit.runner.RunWith;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleMessageProcessor.SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS;
 
 @RunWith(VertxUnitRunner.class)
 public class ScheduleMessageProcessorTest {

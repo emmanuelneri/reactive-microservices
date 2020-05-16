@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper;
 
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;

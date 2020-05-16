@@ -1,4 +1,4 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
@@ -11,9 +11,9 @@ import org.apache.kafka.common.header.Header;
 import java.util.Objects;
 
 @NoArgsConstructor
-class ScheduleRequestResultBuilder {
+public class ScheduleRequestResultBuilder {
 
-    static final ScheduleRequestResultBuilder INSTANCE = new ScheduleRequestResultBuilder();
+    public static final ScheduleRequestResultBuilder INSTANCE = new ScheduleRequestResultBuilder();
 
     public void success(final ConsumerRecord<String, String> record, final Handler<RequestResult> resultHandler) {
         buildReturn(record, true, null, resultHandler);

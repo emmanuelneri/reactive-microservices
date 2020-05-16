@@ -1,6 +1,7 @@
-package br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces;
+package br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper.ScheduleRequestResultBuilder;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import io.vertx.ext.unit.Async;
 import io.vertx.ext.unit.TestContext;
