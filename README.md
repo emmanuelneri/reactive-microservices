@@ -1,9 +1,11 @@
 reactive-architecture
-------------------------------------------------------
+
 [![CircleCI](https://circleci.com/gh/emmanuelneri/reactive-microservices/tree/master.svg?style=svg&circle-token=c7c1c9ef3ae5b4148c847e3e554753fd456a6987)](<LINK>)
 ------------------------------------------------------
 
-## Applications
+## Architecture
+
+![alt tag](https://github.com/emmanuelneri/reactive-microservices/blob/master/architecture.jpeg?style=centerme)
 
 ### schedule-connector
 - Receive schedule request from HTTP Endpoint
@@ -28,7 +30,7 @@ reactive-architecture
   - Schedule and Customer persist in a single table
   - Table key is composed by dateTime, description and customer Document number 
 
-## Run
+## Running environment 
 
 1. Start infrastructure (Kafka, Cassandra), execute ```docker-compose up```
 2. Create datatables ```docker exec -it cassandra bash -c "cqlsh -f /tmp/schedule.cql"```
