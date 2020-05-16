@@ -41,20 +41,18 @@ reactive-architecture
 
 ## TODO: 
 
+- Produzir mensagem de schedule alterado
+    - Producer mensagem repetidas ?
+        - https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/
+        - Idempotent Producer
+        - Deduplicate producer
 - Tolerante reader
 - idempotente consumer
     - https://dzone.com/articles/kafka-clients-at-most-once-at-least-once-exactly-o
     - https://camel.apache.org/components/latest/eips/idempotentConsumer-eip.html
-- Customer
-- Join Schedule + Customer
-- Criar Customer pelo Schedule
 - Tópicos
     - Partições
     - Replicas (escalar Kafka)
-- Producer mensagem repetidas ?
-    - https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/
-    - Idempotent Producer
-    - Deduplicate producer
 - Fallback 
   - Connector : Kafka fora
   - Command : Cassandra fora
@@ -62,3 +60,6 @@ reactive-architecture
 - Escalar consumers
 - Tracing
 - ReprocessId: Retornar apenas um em caso de falha
+- Customer ???
+    - Join Schedule + Customer
+    - Criar Customer pelo Schedule

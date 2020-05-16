@@ -2,7 +2,6 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessageReason;
-import br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
@@ -25,7 +24,7 @@ import java.util.UUID;
 
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
 import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_REQUEST_PROCESSED_ADDRESS;
 
 @RunWith(VertxUnitRunner.class)
 public class ScheduleMessageProcessorTest {
@@ -49,7 +48,7 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async async = context.async();
-        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<String>consumer(SCHEDULE_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertTrue(requestResult.isSuccess(), requestResult.toString());
@@ -94,7 +93,7 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async asyncReturnRequest = context.async();
-        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<String>consumer(SCHEDULE_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertFalse(requestResult.isSuccess(), requestResult.toString());
@@ -136,7 +135,7 @@ public class ScheduleMessageProcessorTest {
 
         final String requestId = UUID.randomUUID().toString();
         final Async asyncReturnRequest = context.async();
-        this.vertx.eventBus().<String>consumer(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, messageResult -> {
+        this.vertx.eventBus().<String>consumer(SCHEDULE_REQUEST_PROCESSED_ADDRESS, messageResult -> {
             final RequestResult requestResult = Json.decodeValue(messageResult.body(), RequestResult.class);
             if (requestId.equals(requestResult.getRequestId())) {
                 context.assertFalse(requestResult.isSuccess(), requestResult.toString());

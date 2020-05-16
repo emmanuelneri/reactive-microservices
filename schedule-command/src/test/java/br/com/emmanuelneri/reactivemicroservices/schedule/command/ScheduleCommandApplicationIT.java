@@ -91,7 +91,7 @@ public class ScheduleCommandApplicationIT {
         final Async async = context.async();
 
         final KafkaConsumer<String, String> kafkaConsumer = KafkaTestConsumer.create(vertx, configuration)
-                .build(ScheduleRequestResultProducer.SCHEDULE_REQUEST_TOPIC);
+                .build(ScheduleRequestResultProducer.SCHEDULE_PROCESSED_TOPIC);
 
         kafkaConsumer.handler(consumerRecord -> {
             final RequestResult requestResult = Json.decodeValue(consumerRecord.value(), RequestResult.class);

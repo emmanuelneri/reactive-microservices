@@ -6,7 +6,9 @@ import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedul
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.exceptions.ValidationException;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper.ScheduleMapper;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper.ScheduleRequestResultBuilder;
+import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.Json;
@@ -21,7 +23,7 @@ public final class ScheduleMessageProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleMessageProcessor.class);
     static final String SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RECEIVED.getName();
     static final String INVALID_SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName();
-    static final String SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RETURN_REQUEST_PROCESSED.getName();
+    static final String SCHEDULE_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_REQUEST_PROCESSED.getName();
 
     private final Vertx vertx;
 
@@ -45,9 +47,7 @@ public final class ScheduleMessageProcessor {
                         return;
                     }
 
-                    ScheduleRequestResultBuilder.INSTANCE.success(record,
-                        requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
-
+                    ScheduleRequestResultBuilder.INSTANCE.success(record, schedule, requestResultHandler());
                     promise.complete();
                     LOGGER.info("message consumed {0}", record);
                 });
@@ -69,7 +69,10 @@ public final class ScheduleMessageProcessor {
             promise.fail(resultHandler.cause());
         }
 
-        ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage,
-            requestResult -> this.vertx.eventBus().publish(SCHEDULE_RETURN_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult)));
+        ScheduleRequestResultBuilder.INSTANCE.fail(record, invalidMessage, requestResultHandler());
+    }
+
+    private Handler<RequestResult> requestResultHandler() {
+        return requestResult -> this.vertx.eventBus().publish(SCHEDULE_REQUEST_PROCESSED_ADDRESS, Json.encode(requestResult));
     }
 }

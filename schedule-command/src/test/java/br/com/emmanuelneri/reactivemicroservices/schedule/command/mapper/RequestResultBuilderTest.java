@@ -1,6 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper;
 
 import br.com.emmanuelneri.reactivemicroservices.errors.InvalidMessage;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.domain.Schedule;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.mapper.ScheduleRequestResultBuilder;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import io.vertx.ext.unit.Async;
@@ -22,7 +23,7 @@ public class RequestResultBuilderTest {
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
 
         final Async async = context.async();
-        ScheduleRequestResultBuilder.INSTANCE.success(record, result -> {
+        ScheduleRequestResultBuilder.INSTANCE.success(record, new Schedule(), result -> {
             context.assertTrue(result.isSuccess());
             context.assertNull(result.getDescription());
             context.assertEquals(requestId, result.getRequestId());
