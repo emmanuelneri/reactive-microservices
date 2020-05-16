@@ -6,7 +6,7 @@ import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfigurati
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleConsumerVerticle;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.SchedulePersistenceVerticle;
-import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleRequestResultProducer;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleProducessedProducer;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
@@ -37,7 +37,7 @@ public class ScheduleCommandApplication {
         final CassandraConfiguration cassandraConfiguration = new CassandraConfiguration(configuration);
 
 
-        vertx.deployVerticle(new ScheduleRequestResultProducer(kafkaProducerConfiguration));
+        vertx.deployVerticle(new ScheduleProducessedProducer(kafkaProducerConfiguration));
         vertx.deployVerticle(new SchedulePersistenceVerticle(cassandraConfiguration));
         vertx.deployVerticle(new ScheduleConsumerVerticle(kafkaConsumerConfiguration));
     }

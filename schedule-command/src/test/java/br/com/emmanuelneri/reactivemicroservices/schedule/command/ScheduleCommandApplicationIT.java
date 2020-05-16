@@ -4,7 +4,7 @@ import br.com.emmanuelneri.reactivemicroservices.cassandra.codec.LocalDateTimeCo
 import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.cassandra.test.CassandraTestConstants;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleConsumerVerticle;
-import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleRequestResultProducer;
+import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleProducessedProducer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.test.CassandraInit;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.CustomerSchema;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.RequestResult;
@@ -91,7 +91,7 @@ public class ScheduleCommandApplicationIT {
         final Async async = context.async();
 
         final KafkaConsumer<String, String> kafkaConsumer = KafkaTestConsumer.create(vertx, configuration)
-                .build(ScheduleRequestResultProducer.SCHEDULE_PROCESSED_TOPIC);
+                .build(ScheduleProducessedProducer.SCHEDULE_PROCESSED_TOPIC);
 
         kafkaConsumer.handler(consumerRecord -> {
             final RequestResult requestResult = Json.decodeValue(consumerRecord.value(), RequestResult.class);

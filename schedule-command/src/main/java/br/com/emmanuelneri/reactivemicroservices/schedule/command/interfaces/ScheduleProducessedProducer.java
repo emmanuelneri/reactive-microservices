@@ -14,16 +14,16 @@ import io.vertx.kafka.client.producer.KafkaProducerRecord;
 
 import java.util.Map;
 
-public class ScheduleRequestResultProducer extends AbstractVerticle {
+public class ScheduleProducessedProducer extends AbstractVerticle {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleRequestResultProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleProducessedProducer.class);
 
     public static final String SCHEDULE_PROCESSED_TOPIC = "ScheduleProcessed";
     static final String SCHEDULE_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_REQUEST_PROCESSED.getName();
 
     private final Map<String, String> kafkaProducerConfiguration;
 
-    public ScheduleRequestResultProducer(final KafkaProducerConfiguration kafkaProducerConfiguration) {
+    public ScheduleProducessedProducer(final KafkaProducerConfiguration kafkaProducerConfiguration) {
         this.kafkaProducerConfiguration = kafkaProducerConfiguration.createConfig();
     }
 
