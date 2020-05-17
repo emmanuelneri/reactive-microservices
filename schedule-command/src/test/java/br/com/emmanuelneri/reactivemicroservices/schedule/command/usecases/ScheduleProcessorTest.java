@@ -22,12 +22,12 @@ import org.junit.runner.RunWith;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_RECEIVED_ADDRESS;
-import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleMessageProcessor.SCHEDULE_REQUEST_PROCESSED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleProcessor.INVALID_SCHEDULE_RECEIVED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleProcessor.SCHEDULE_RECEIVED_ADDRESS;
+import static br.com.emmanuelneri.reactivemicroservices.schedule.command.usecases.ScheduleProcessor.SCHEDULE_REQUEST_PROCESSED_ADDRESS;
 
 @RunWith(VertxUnitRunner.class)
-public class ScheduleMessageProcessorTest {
+public class ScheduleProcessorTest {
 
     private Vertx vertx;
 
@@ -66,11 +66,11 @@ public class ScheduleMessageProcessorTest {
         schema.setDateTime(LocalDateTime.now().plusDays(1));
         schema.setDescription("Complete Test");
 
-        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
+        final ScheduleProcessor scheduleProcessor = ScheduleProcessor.create(this.vertx);
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("success.topic", 0, 0, "1", Json.encode(schema));
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
-        scheduleMessageProcessor.process(record, promise);
+        scheduleProcessor.process(record, promise);
         promise.future().setHandler(resultHandler -> {
             if (resultHandler.failed()) {
                 context.fail(resultHandler.cause());
@@ -102,13 +102,13 @@ public class ScheduleMessageProcessorTest {
             }
         });
 
-        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
+        final ScheduleProcessor scheduleProcessor = ScheduleProcessor.create(this.vertx);
         final String messageValue = "{\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Invalid Schema Test\"}";
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("invalid.schema.topic", 0, 0, "2", messageValue);
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, requestId.getBytes());
-        scheduleMessageProcessor.process(record, promise);
+        scheduleProcessor.process(record, promise);
 
         promise.future().setHandler(resultHandler -> {
             if (resultHandler.failed()) {
@@ -145,13 +145,13 @@ public class ScheduleMessageProcessorTest {
             asyncReturnRequest.complete();
         });
 
-        final ScheduleMessageProcessor scheduleMessageProcessor = ScheduleMessageProcessor.create(this.vertx);
+        final ScheduleProcessor scheduleProcessor = ScheduleProcessor.create(this.vertx);
         final String messageValue = "{\"dateTime\":\"12-04-2020\",\"customer\":{\"name\":\"Customer 1\",\"documentNumber\":948948393849,\"phone\":\"4499099493\"},\"description\":\"Invalid Json Test\"}";
 
         final Promise<Void> promise = Promise.promise();
         final ConsumerRecord<String, String> record = new ConsumerRecord<>("invalid.json.topic", 0, 0, "3", messageValue);
         record.headers().add(ScheduleSchema.REQUEST_ID_HEADER, UUID.randomUUID().toString().getBytes());
-        scheduleMessageProcessor.process(record, promise);
+        scheduleProcessor.process(record, promise);
 
         promise.future().setHandler(resultHandler -> {
             if (resultHandler.failed()) {

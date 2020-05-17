@@ -14,9 +14,9 @@ import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
 import io.vertx.core.logging.LoggerFactory;
 
-public class ScheduleProcessor extends AbstractVerticle {
+public class ScheduleRequestProcessor extends AbstractVerticle {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleRequestProcessor.class);
     private InboundScheduleMapper scheduleMapper;
 
     @Override
@@ -36,7 +36,7 @@ public class ScheduleProcessor extends AbstractVerticle {
             final Schedule schedule = mapperAsyncResult.result();
             validate(schedule, validateAsyncResult -> {
                 if (validateAsyncResult.failed()) {
-                    LOGGER.error("invalid schema", mapperAsyncResult.cause());
+                    LOGGER.error("invalid schema", validateAsyncResult.cause());
                     message.reply(ReplyResult.error(validateAsyncResult.cause().getMessage()).asJson());
                     return;
                 }

@@ -18,9 +18,9 @@ import lombok.AllArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 
 @AllArgsConstructor(staticName = "create")
-public final class ScheduleMessageProcessor {
+public final class ScheduleProcessor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleMessageProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleProcessor.class);
     static final String SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.SCHEDULE_RECEIVED.getName();
     static final String INVALID_SCHEDULE_RECEIVED_ADDRESS = ScheduleCommandEvents.INVALID_SCHEDULE_RECEIVED.getName();
     static final String SCHEDULE_REQUEST_PROCESSED_ADDRESS = ScheduleCommandEvents.SCHEDULE_REQUEST_PROCESSED.getName();

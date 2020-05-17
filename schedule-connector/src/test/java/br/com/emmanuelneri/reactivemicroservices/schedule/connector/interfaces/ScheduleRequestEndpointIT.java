@@ -3,7 +3,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.connector.interfaces;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleConnectorEvents;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Customer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleRequestProcessor;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
 import br.com.emmanuelneri.reactivemicroservices.vertx.eventbus.ReplyResult;
 import io.vertx.core.Vertx;
@@ -23,7 +23,7 @@ import org.junit.runner.RunWith;
 import java.time.LocalDateTime;
 
 @RunWith(VertxUnitRunner.class)
-public class ScheduleEndpointIT {
+public class ScheduleRequestEndpointIT {
 
     private static final int PORT = 9999;
     private static final String HOST = "localhost";
@@ -55,8 +55,8 @@ public class ScheduleEndpointIT {
         schema.setDescription("Test");
 
         final Router router = Router.router(this.vertx);
-        this.vertx.deployVerticle(new ScheduleProcessor());
-        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+        this.vertx.deployVerticle(new ScheduleRequestProcessor());
+        this.vertx.deployVerticle(new ScheduleRequestEndpoint((router)));
 
         final WebClient client = WebClient.create(this.vertx);
         final HttpServer httpServer = this.vertx.createHttpServer();
@@ -88,8 +88,8 @@ public class ScheduleEndpointIT {
         final String schema = "{\"desc\":\123}";
 
         final Router router = Router.router(this.vertx);
-        this.vertx.deployVerticle(new ScheduleProcessor());
-        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+        this.vertx.deployVerticle(new ScheduleRequestProcessor());
+        this.vertx.deployVerticle(new ScheduleRequestEndpoint((router)));
 
         final WebClient client = WebClient.create(this.vertx);
         final HttpServer httpServer = this.vertx.createHttpServer();
@@ -120,7 +120,6 @@ public class ScheduleEndpointIT {
     @Test
     public void shouldReturnBandRequestWithNoValidSchedule(final TestContext context) {
         final Customer customerSchema = new Customer();
-        customerSchema.setDocumentNumber("043030493");
         customerSchema.setName("Customer");
         customerSchema.setPhone("4499099493");
 
@@ -130,8 +129,8 @@ public class ScheduleEndpointIT {
         schema.setDescription("Test");
 
         final Router router = Router.router(this.vertx);
-        this.vertx.deployVerticle(new ScheduleProcessor());
-        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+        this.vertx.deployVerticle(new ScheduleRequestProcessor());
+        this.vertx.deployVerticle(new ScheduleRequestEndpoint((router)));
 
         final WebClient client = WebClient.create(this.vertx);
         final HttpServer httpServer = this.vertx.createHttpServer();
@@ -151,7 +150,7 @@ public class ScheduleEndpointIT {
 
                                 final HttpResponse<Buffer> result = clientAsyncResult.result();
                                 context.assertEquals(400, result.statusCode());
-                                context.assertEquals("dateTime invalid. Past dateTime is not allowed", result.bodyAsString());
+                                context.assertEquals("customer documentNumber is required", result.bodyAsString());
 
                                 httpServer.close();
                                 async.complete();

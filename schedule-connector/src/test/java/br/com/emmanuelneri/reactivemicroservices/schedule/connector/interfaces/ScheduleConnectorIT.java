@@ -4,7 +4,7 @@ import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfigurati
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Customer;
 import br.com.emmanuelneri.reactivemicroservices.schedule.connector.domain.Schedule;
-import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleProcessor;
+import br.com.emmanuelneri.reactivemicroservices.schedule.connector.usecase.ScheduleRequestProcessor;
 import br.com.emmanuelneri.reactivemicroservices.schedule.schema.ScheduleSchema;
 import br.com.emmanuelneri.reactivemicroservices.test.KafkaTestConstants;
 import br.com.emmanuelneri.reactivemicroservices.vertx.core.VertxBuilder;
@@ -79,9 +79,9 @@ public class ScheduleConnectorIT {
         final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
         final Router router = Router.router(vertx);
 
-        this.vertx.deployVerticle(new ScheduleProcessor());
+        this.vertx.deployVerticle(new ScheduleRequestProcessor());
         this.vertx.deployVerticle(new ScheduleProducer(kafkaProducerConfiguration));
-        this.vertx.deployVerticle(new ScheduleEndpoint((router)));
+        this.vertx.deployVerticle(new ScheduleRequestEndpoint((router)));
 
         final Map<String, String> kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration).createConfig("test-schedule-consumer");
         final KafkaConsumer<String, String> kafkaConsumer = KafkaConsumer.create(this.vertx, kafkaConsumerConfiguration);

@@ -36,7 +36,7 @@ reactive-architecture
 ## Running environment 
 
 1. Start infrastructure (Kafka, Cassandra), execute ```docker-compose up```
-2. Create datatables ```docker exec -it cassandra bash -c "cqlsh -f /tmp/schedule.cql"```
+2. Create tables ```docker exec -it cassandra bash -c "cqlsh -f /tmp/schedule.cql"```
 
 
 ## TODO: 

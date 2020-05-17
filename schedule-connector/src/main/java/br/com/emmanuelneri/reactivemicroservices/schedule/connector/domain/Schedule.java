@@ -31,10 +31,6 @@ public class Schedule {
             throw new ValidationException("dateTime is required");
         }
 
-        if (dateTime.isBefore(LocalDateTime.now())) {
-            throw new ValidationException("dateTime invalid. Past dateTime is not allowed");
-        }
-
         if (Objects.isNull(description)) {
             throw new ValidationException("description is required");
         }

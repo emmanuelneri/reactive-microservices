@@ -17,9 +17,9 @@ import io.vertx.ext.web.handler.BodyHandler;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class ScheduleEndpoint extends AbstractVerticle {
+public class ScheduleRequestEndpoint extends AbstractVerticle {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleEndpoint.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleRequestEndpoint.class);
     private static final String PATH = "/schedules";
 
     private final Router router;

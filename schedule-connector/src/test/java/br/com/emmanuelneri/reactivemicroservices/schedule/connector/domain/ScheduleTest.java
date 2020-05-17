@@ -28,20 +28,4 @@ public class ScheduleTest {
 
         schedule.validate();
     }
-
-    @Test(expected = ValidationException.class)
-    public void shoulReturnExceptionWithPastDateTime() {
-        final Schedule schedule = new Schedule();
-        schedule.setDateTime(LocalDateTime.now().minusDays(1));
-        schedule.setDescription("Schedule");
-
-        final Customer customer = new Customer();
-        customer.setDocumentNumber("32423423423523");
-        customer.setName("Customer");
-        customer.setPhone("4494834390493");
-        customer.setEmail("customer@gmail.com");
-        schedule.setCustomer(customer);
-
-        schedule.validate();
-    }
 }
