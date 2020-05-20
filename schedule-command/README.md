@@ -1,7 +1,7 @@
 ## Schedule command
 
 ### Cassandra Query
-1. Access Cassandra in Docker```docker exec -it cassandra bash```
+1. Access Cassandra in Docker```docker exec -it cassandra1 bash```
 2. Cassandra connect```cqlsh``` 
 3. Execute Query```SELECT * from dev.schedule``` 
 ```

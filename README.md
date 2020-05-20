@@ -36,7 +36,8 @@ reactive-architecture
 ## Running environment 
 
 1. Start infrastructure (Kafka, Cassandra), execute ```docker-compose up```
-2. Create tables ```docker exec -it cassandra bash -c "cqlsh -f /tmp/schedule.cql"```
+3. Create topics ```./kafka-create-topics.sh```
+2. Create tables ```./cassandra-create-tables.sh```
 
 
 ## TODO: 
@@ -50,9 +51,6 @@ reactive-architecture
 - idempotente consumer
     - https://dzone.com/articles/kafka-clients-at-most-once-at-least-once-exactly-o
     - https://camel.apache.org/components/latest/eips/idempotentConsumer-eip.html
-- Tópicos
-    - Partições
-    - Replicas (escalar Kafka)
 - Fallback 
   - Connector : Kafka fora
   - Command : Cassandra fora

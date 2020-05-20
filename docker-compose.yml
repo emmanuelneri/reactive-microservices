@@ -53,10 +53,38 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka3:29094,PLAINTEXT_HOST://localhost:9094
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
 
-  cassandra:
+  cassandra1:
     image: cassandra:3.11
-    container_name: cassandra
+    container_name: cassandra1
     ports:
       - "9042:9042"
+    environment:
+      CASSANDRA_CLUSTER_NAME: cassandra-cluster
+      CASSANDRA_DC: cassandra-dc
+      CASSANDRA_SEEDS: cassandra2,cassandra3
     volumes:
       - ./schedule-command/conf/schedule.cql:/tmp/schedule.cql
+
+  cassandra2:
+    image: cassandra:3.11
+    container_name: cassandra2
+    ports:
+      - "9043:9042"
+    depends_on:
+      - cassandra1
+    environment:
+      CASSANDRA_CLUSTER_NAME: cassandra-cluster
+      CASSANDRA_DC: cassandra-dc
+      CASSANDRA_SEEDS: cassandra1,cassandra3
+
+  cassandra3:
+    image: cassandra:3.11
+    container_name: cassandra3
+    ports:
+      - "9044:9042"
+    depends_on:
+      - cassandra1
+    environment:
+      CASSANDRA_CLUSTER_NAME: cassandra-cluster
+      CASSANDRA_DC: cassandra-dc
+      CASSANDRA_SEEDS: cassandra1,cassandra2
