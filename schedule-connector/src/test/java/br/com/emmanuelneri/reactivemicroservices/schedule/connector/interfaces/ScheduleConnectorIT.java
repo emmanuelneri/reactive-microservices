@@ -134,7 +134,7 @@ public class ScheduleConnectorIT {
     }
 
     @Test
-    public void shouldProduceTopicMenssageInOrder(final TestContext context) {
+    public void shouldProduceTopicMessageInOrder(final TestContext context) {
         final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
         final Router router = Router.router(vertx);
 
@@ -181,6 +181,7 @@ public class ScheduleConnectorIT {
                 final AtomicInteger consumedCount = new AtomicInteger();
                 kafkaConsumer.handler(consumerRecord -> {
                     final int order = consumedCount.getAndIncrement();
+                    context.assertEquals(consumerRecord.offset(), (long) order);
 
                     final ScheduleSchema consumedSchema = Json.decodeValue(consumerRecord.value(), ScheduleSchema.class);
                     context.assertEquals("schedule:" + order, consumedSchema.getDescription());
