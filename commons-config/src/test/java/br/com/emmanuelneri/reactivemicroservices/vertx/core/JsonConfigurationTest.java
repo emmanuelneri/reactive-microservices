@@ -4,8 +4,10 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.junit.Assert;
 import org.junit.Test;
@@ -66,6 +68,44 @@ public class JsonConfigurationTest {
         Assert.assertEquals(object.getLocalDateTime(), LocalDateTime.of(2020, 2, 1, 10, 20));
     }
 
+    @Test
+    public void shouldNotEncodeNullObjectFields() {
+        JsonConfiguration.setUpDefault();
+
+        final Schema schema = Schema.builder()
+                .name("Schema")
+                .build();
+
+        final String expected = "{\"name\":\"Schema\",\"age\":0}";
+        Assert.assertEquals(expected, Json.encode(schema));
+    }
+
+    @Test
+    public void shouldDecodeJsonWithoutAllFields() {
+        JsonConfiguration.setUpDefault();
+
+        final String schemaAsJson = "{\"name\":\"Schema\",\"age\":0}";
+
+        final Schema schema = Schema.builder()
+                .name("Schema")
+                .build();
+
+        Assert.assertEquals(schema, Json.decodeValue(schemaAsJson, Schema.class));
+    }
+
+    @Test
+    public void shouldNotFailOnUnknownFields() {
+        JsonConfiguration.setUpDefault();
+
+        final String schemaAsJson = "{\"name\":\"Schema\",\"age\":0,\"order\":0}";
+
+        final Schema schema = Schema.builder()
+                .name("Schema")
+                .build();
+
+        Assert.assertEquals(schema, Json.decodeValue(schemaAsJson, Schema.class));
+    }
+
     @ToString
     @Getter
     @Builder
@@ -74,5 +114,17 @@ public class JsonConfigurationTest {
     private static class ObjectWitDate {
         private String name;
         private LocalDateTime localDateTime;
+    }
+
+    @Getter
+    @Setter
+    @Builder
+    @EqualsAndHashCode
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static class Schema {
+        private String name;
+        private int age;
+        private String email;
     }
 }
