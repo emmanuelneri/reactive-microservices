@@ -42,9 +42,6 @@ reactive-architecture
 
 ## TODO: 
 
-- idempotente consumer
-    - https://dzone.com/articles/kafka-clients-at-most-once-at-least-once-exactly-o
-    - https://camel.apache.org/components/latest/eips/idempotentConsumer-eip.html
 - Teste do cenário
 - Fallback 
   - Connector : Kafka fora
