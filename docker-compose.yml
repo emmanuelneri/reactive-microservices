@@ -1,4 +1,7 @@
 version: '3.6'
+networks:
+  default:
+    name: reactive-microservices
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:5.2.1
@@ -62,6 +65,7 @@ services:
       CASSANDRA_CLUSTER_NAME: cassandra-cluster
       CASSANDRA_DC: cassandra-dc
       CASSANDRA_SEEDS: cassandra2,cassandra3
+      CASSANDRA_BROADCAST_ADDRESS: cassandra1
     volumes:
       - ./schedule-command/conf/schedule.cql:/tmp/schedule.cql
 
@@ -76,6 +80,7 @@ services:
       CASSANDRA_CLUSTER_NAME: cassandra-cluster
       CASSANDRA_DC: cassandra-dc
       CASSANDRA_SEEDS: cassandra1,cassandra3
+      CASSANDRA_BROADCAST_ADDRESS: cassandra2
 
   cassandra3:
     image: cassandra:3.11
@@ -88,3 +93,4 @@ services:
       CASSANDRA_CLUSTER_NAME: cassandra-cluster
       CASSANDRA_DC: cassandra-dc
       CASSANDRA_SEEDS: cassandra1,cassandra2
+      CASSANDRA_BROADCAST_ADDRESS: cassandra3

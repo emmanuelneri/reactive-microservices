@@ -2,6 +2,7 @@ package br.com.emmanuelneri.reactivemicroservices.schedule.command;
 
 import br.com.emmanuelneri.reactivemicroservices.cassandra.config.CassandraConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.commons.config.ConfigRetrieverConfiguration;
+import br.com.emmanuelneri.reactivemicroservices.commons.config.EnvironmentContext;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.schedule.command.interfaces.ScheduleConsumerVerticle;
@@ -21,13 +22,15 @@ public class ScheduleCommandApplication {
     public static void main(final String[] args) {
         final Vertx vertx = VertxBuilder.createAndConfigure();
 
-        ConfigRetrieverConfiguration.configure(vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
+        ConfigRetrieverConfiguration.configure(EnvironmentContext.getEnvironment(), vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
             if (configurationHandler.failed()) {
                 LOGGER.error("configuration failed", configurationHandler.cause());
                 return;
             }
 
-            start(vertx, configurationHandler.result());
+            final JsonObject configuration = configurationHandler.result();
+            LOGGER.info("configuration: {0}", configuration);
+            start(vertx, configuration);
         });
     }
 

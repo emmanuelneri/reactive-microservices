@@ -1,6 +1,7 @@
 package br.com.emmanuelneri.reactivemicroservices.schedule.connector;
 
 import br.com.emmanuelneri.reactivemicroservices.commons.config.ConfigRetrieverConfiguration;
+import br.com.emmanuelneri.reactivemicroservices.commons.config.EnvironmentContext;
 import br.com.emmanuelneri.reactivemicroservices.commons.config.HttpServerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaConsumerConfiguration;
 import br.com.emmanuelneri.reactivemicroservices.config.KafkaProducerConfiguration;
@@ -27,13 +28,15 @@ public class ScheduleConnectorApplication {
     public static void main(String[] args) {
         final Vertx vertx = VertxBuilder.createAndConfigure();
 
-        ConfigRetrieverConfiguration.configure(vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
+        ConfigRetrieverConfiguration.configure(EnvironmentContext.getEnvironment(), vertx, APPLICATION_NAME).getConfig(configurationHandler -> {
             if (configurationHandler.failed()) {
                 LOGGER.error("configuration failed", configurationHandler.cause());
                 return;
             }
 
             final JsonObject configuration = configurationHandler.result();
+            LOGGER.info("configuration: {0}", configuration);
+
             final KafkaProducerConfiguration kafkaProducerConfiguration = new KafkaProducerConfiguration(configuration);
             final KafkaConsumerConfiguration kafkaConsumerConfiguration = new KafkaConsumerConfiguration(configuration);
             final Router router = Router.router(vertx);
@@ -44,27 +47,27 @@ public class ScheduleConnectorApplication {
             vertx.deployVerticle(new ScheduleRequestEndpoint(router));
 
             final Handler<ServerWebSocket> scheduleProcessedWebSockeHandler = ScheduleProcessedWebSocketHandler
-                .create(vertx).getServerWebSocketHandler();
+                    .create(vertx).getServerWebSocketHandler();
 
             startHttpServer(vertx, configuration, router, scheduleProcessedWebSockeHandler);
         });
     }
 
     private static void startHttpServer(final Vertx vertx, final JsonObject configuration, final Router router,
-        final Handler<ServerWebSocket> handler) {
+                                        final Handler<ServerWebSocket> handler) {
         final HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration(configuration);
 
         final HttpServer httpServer = vertx.createHttpServer();
         httpServer.requestHandler(router)
-            .webSocketHandler(handler)
-            .listen(httpServerConfiguration.getPort(), asyncResult -> {
-                if (asyncResult.failed()) {
-                    LOGGER.error("failed to start http server");
-                    return;
-                }
+                .webSocketHandler(handler)
+                .listen(httpServerConfiguration.getPort(), asyncResult -> {
+                    if (asyncResult.failed()) {
+                        LOGGER.error("failed to start http server");
+                        return;
+                    }
 
-                LOGGER.info("http server started on port {0}", httpServer.actualPort());
-            });
+                    LOGGER.info("http server started on port {0}", httpServer.actualPort());
+                });
     }
 
 }

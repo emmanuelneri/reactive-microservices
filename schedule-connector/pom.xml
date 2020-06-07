@@ -11,6 +11,10 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>schedule-connector</artifactId>
 
+    <properties>
+        <vertx.launcher>br.com.emmanuelneri.reactivemicroservices.schedule.connector.ScheduleConnectorApplication</vertx.launcher>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -71,5 +75,39 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>io.reactiverse</groupId>
+                <artifactId>vertx-maven-plugin</artifactId>
+                <version>${reactiverse.vertx.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>vmp</id>
+                        <goals>
+                            <goal>initialize</goal>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <redeploy>true</redeploy>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${fabric8.docker.plugin.version}</version>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>${project.parent.artifactId}/${project.name}</name>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

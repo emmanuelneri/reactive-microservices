@@ -17,7 +17,7 @@ public class ConfigRetrieverConfigurationTest {
         final Vertx vertx = VertxBuilder.createAndConfigure();
 
         final Async async = context.async();
-        ConfigRetrieverConfiguration.configure(vertx, "test")
+        ConfigRetrieverConfiguration.configure(Environment.DEV, vertx, "test")
                 .getConfig(configurationHandler -> {
                     context.assertTrue(configurationHandler.failed());
                     async.complete();
@@ -26,7 +26,7 @@ public class ConfigRetrieverConfigurationTest {
 
     @Test
     public void applicationNameShouldReturnConfiguration(final TestContext context) {
-        final String filePath = ConfigRetrieverConfiguration.getFilePath("commons-config");
+        final String filePath = ConfigRetrieverConfiguration.getFilePath(Environment.DEV, "commons-config");
         Assert.assertEquals("commons-config/conf/commons-config.properties", filePath);
     }
 }
