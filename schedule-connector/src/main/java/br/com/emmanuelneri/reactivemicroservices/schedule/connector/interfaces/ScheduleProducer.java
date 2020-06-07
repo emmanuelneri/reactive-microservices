@@ -54,6 +54,11 @@ public class ScheduleProducer extends AbstractVerticle {
                 final String requestId = scheduleOutbound.getRequestId().toString();
                 kafkaProducerRecord.addHeader(ScheduleSchema.REQUEST_ID_HEADER, requestId);
 
+                kafkaProducer.exceptionHandler(throwable -> {
+                    LOGGER.error("Kafka exception handler: {0}", kafkaProducerRecord, throwable);
+                    message.reply(ReplyResult.INTERNAL_ERROR.asJson());
+                });
+
                 kafkaProducer.send(kafkaProducerRecord, result -> {
                     if (result.failed()) {
                         LOGGER.error("message send error {0}", kafkaProducerRecord, result.cause());
