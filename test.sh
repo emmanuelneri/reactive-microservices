@@ -2,4 +2,16 @@
 
 scheduleConnector=http://localhost:8080/schedules
 
-curl -v -d "{\"dateTime\":\"2020-05-09T12:14:50.786\",\"customer\":{\"name\":\"Customer\",\"documentNumber\":\"043030493\",\"phone\":\"4499099493\"},\"description\":\"Test\"}" -H "Content-Type: application/json" -X POST ${scheduleConnector}
+for i in {1..1000}
+do
+  customer="Customer${i}"
+  documentNumber="0000${i}"
+  description="Test ${i}"
+  dateNow=$(date +"%FT%T")
+
+  json="{\"dateTime\":\"${dateNow}\",\"customer\":{\"name\":\"${customer}\",\"documentNumber\":\"${documentNumber}\",\"phone\":\"4499999999\"},\"description\":\"${description}\"}"
+
+  response=$(curl -s -d "${json}" -H "Content-Type: application/json" -X POST ${scheduleConnector})
+  echo ${response}
+
+done

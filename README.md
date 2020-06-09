@@ -39,13 +39,11 @@ reactive-architecture
 3. Create topics ```./kafka-create-topics.sh```
 2. Create tables ```./cassandra-create-tables.sh```
 
+## Building applications
+1. Build docker images ``./build-app-docker-images.sh``
 
-## TODO: 
+## Running applications
+1. Start applications ``./start-apps.sh`` 
+2. Starting websocket client to receive process response``docker run -it --network=reactive-microservices solsson/websocat ws://schedule-connector:8080/schedules``
+3. Execute test to send schedules ``./test.sh`` 
 
-- Teste do cenário
-- Fallback 
-  - Connector : Kafka fora
-  - Command : Cassandra fora
-- Tolerância a falha (Review)
-- Escalar consumers
-- ReprocessId: Retornar apenas um em caso de falha

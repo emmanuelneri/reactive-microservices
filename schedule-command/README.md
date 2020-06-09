@@ -3,7 +3,7 @@
 ### Cassandra Query
 1. Access Cassandra in Docker```docker exec -it cassandra1 bash```
 2. Cassandra connect```cqlsh``` 
-3. Execute Query```SELECT * from dev.schedule``` 
+3. Execute Query```SELECT * from dev.schedule;``` 
 ```
 emmanuelneri@MacBook-Pro-de-Emmanuel  % docker exec -it cassandra bash                                         
 root@ef9f1d97636a:/# cqlsh
